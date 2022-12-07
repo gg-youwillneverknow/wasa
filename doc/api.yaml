@@ -545,36 +545,43 @@ components:
     commentId:
       in: path
       name: commentId
+      description: The comment identifier
       schema: { $ref: "#/components/schemas/commentId" }
       required: true
     username: 
       in: path
       name: username 
+      description: The name of a user
       schema: {$ref: '#/components/schemas/username'}
       required: true
     userId: 
       in: path
       name: userId
+      description: The identifier for a user
       schema: {$ref: '#/components/schemas/userId'}
       required: true
     followername: 
       in: path
       name: followername
+      description: The name of a follower
       schema: {$ref: '#/components/schemas/username'}
       required: true
     followingname: 
       in: path
       name: followingname
+      description: The name of a following
       schema: {$ref: '#/components/schemas/username'}
       required: true
     bannedname: 
       in: path
       name: bannedname
+      description: The name of a banned user
       schema: {$ref: '#/components/schemas/username'}
       required: true
     photoId:
       in: path
       name: photoId
+      description: The identifier of a phot
       schema: {$ref: '#/components/schemas/photoId'}
       required: true
     page:
@@ -584,6 +591,7 @@ components:
       required: false
       schema: 
         type: integer
+        description: An integer signifying the page number
         format: int32
         default: 1
         minimum: 1
@@ -594,6 +602,7 @@ components:
       required: false
       schema: 
         type: integer
+        description: An integer signifying the limit
         format: int32
         default: 10
         minimum: 10
@@ -606,29 +615,34 @@ components:
       required: false
       schema:
         type: string
+        description: A description in human redeable terms for an order
         default: 'reverse chronological'
+        example: 'chronological'
+        pattern: '^[a-zA-Z0-9]{5,40}$'
+        minLength: 5
+        maxLength: 40
   responses:
     BadRequest:
-      description: Request was formulated badly. 
+      description: Request was formulated badly
       content: 
         application/json:
           schema: 
             $ref: '#/components/schemas/Error'
     InternalServerError:
-      description: There is an error in the server.
+      description: There is an error in the server
       content: 
         application/json:
           schema: 
             $ref: '#/components/schemas/Error'
     NotFoundError:
-      description: There is an error in the server.
+      description: There is an error in the server
       content: 
         application/json:
           schema: 
             $ref: '#/components/schemas/Error'
   schemas:
     userInfo:
-      description: The information that characterizes a user. 
+      description: The information that characterizes a user
       type: object 
       properties: 
         username: { $ref: "#/components/schemas/username" }
@@ -637,14 +651,15 @@ components:
       - username 
       - userId
     image: 
-      description: The binary file corrisponding to the image.
+      description: The binary file corrisponding to the image
       type: string 
       format: binary
     photoId:
-      description: The identifier for a photo assigned by the server.
+      description: The identifier for a photo assigned by the server
       type: object
       properties:
         identifier:
+          description: The identifier for the photo
           type: string 
           example: "abcdef012345"
           pattern: '^[a-zA-Z0-9_.+-]{10,200}$'
@@ -653,30 +668,33 @@ components:
       required: 
       - identifier
     userId: 
-      description: The identifier for a user assigned by the server upon registration. 
+      description: The identifier for a user assigned by the server upon registration
       type: object 
       properties:
         identifier:
+          description: The identifier for the user
           type: string
           example: "abcdef012345"
           pattern: '^[a-zA-Z0-9_.+-]{10,200}$'
           minLength: 10 
           maxLength: 200
     commentId: 
-      description: The identifier for a comment assigned by the server upon registration. 
+      description: The identifier for a comment assigned by the server upon registration
       type: object 
       properties: 
         identifier: 
+          description: The identifier for the comment
           type: string
           example: "abcdef012345"
           pattern: '^[a-zA-Z0-9_.+-]{10,200}$'
           minLength: 10 
           maxLength: 200
     username: 
-      description: The name chosen by the user for public identification by other users.
+      description: The name chosen by the user for public identification by other users
       type: object 
       properties:
         name:
+          description: The name of the user 
           type: string 
           example: Maria 
           pattern: '^[a-zA-Z][a-zA-Z0-9_.]{10,25}$' 
@@ -687,6 +705,7 @@ components:
       description: The error statement. 
       properties:
         statement:
+          description: The text from the server for exaplaing the error
           type: string
           example: Error traced back to invalid username.
           pattern: '^[a-zA-Z0-9.]{5,30}$'
@@ -694,9 +713,10 @@ components:
           maxLength: 30
     stream: 
       type: object
-      description: Photos in reverse chronological order by several users.
+      description: Photos in reverse chronological order by several users
       properties: 
         list: 
+          description: The list of photos of the stream
           type: array 
           items: { $ref: "#/components/schemas/photo" }
           minItems: 0
@@ -704,9 +724,10 @@ components:
           uniqueItems: true
     photos: 
       type: object
-      description: User's photos in reverse chronological order.
+      description: User's photos in reverse chronological order
       properties: 
         list: 
+          description: The list of photos of a profile
           type: array 
           items: { $ref: "#/components/schemas/photo" }
           minItems: 0
@@ -718,6 +739,7 @@ components:
       properties:
         photoId: { $ref: "#/components/schemas/photoId" }
         dateTime: 
+          description: The date of publishment of the photo
           type: string
           format: date-time
         likes: { $ref: "#/components/schemas/likes" }
@@ -743,7 +765,7 @@ components:
       uniqueItems: true
     following:
       type: object
-      description: The following user is reppresented by its username.
+      description: The following user is reppresented by its username
       properties:
         followingUserName: { $ref: "#/components/schemas/username" }
       required: 
@@ -757,7 +779,7 @@ components:
       uniqueItems: true
     banned:
       type: object
-      description: A banned user is reppresented by its username.
+      description: A banned user is reppresented by its username
       properties:
         bannedUserName: { $ref: "#/components/schemas/username" }
       required: 
@@ -771,21 +793,24 @@ components:
       uniqueItems: true
     comment: 
       type: object
-      description: The comment is rappresented by the username who put the comment and the userId as well as the comment itself.
+      description: The comment is rappresented by the username who put the comment and the userId as well as the comment itself
       properties: 
         commentId:
+          description: Comment identifier encapsulation for making it read only
           type: object
           properties:
             identifier: { $ref: "#/components/schemas/commentId" }
           readOnly: true
         commentText:
           type: string 
+          description: The text of the comment chosen by user
           example: Beautiful!
           pattern: '^[a-zA-Z0-9_.+-]{1,2200}$'
           minLength: 1
           maxLength: 2200
         commenterUserName: 
           type: object
+          description: Commenter username encapsulation for making it read only
           properties:
             identifier: { $ref: "#/components/schemas/username" }
           readOnly: true
@@ -795,15 +820,17 @@ components:
       - commenterUserName
     comments:
       type: object
-      description: The numeber and the list of comments put.
+      description: The numeber and the list of comments put
       properties:
         number: 
+          description: Number of comments
           type: integer
           format: int32
           minimum: 0 
           maximum: 10000000
           default: 0
         list:
+          description: List of comments
           type: array 
           items: { $ref: "#/components/schemas/comment" }
           minItems: 0
@@ -824,12 +851,14 @@ components:
       description: The likes number and the list of users who liked
       properties:
         number: 
+          description: Number of likes
           type: integer
           format: int32
           minimum: 0 
           maximum: 10000000
         list:
           type: array 
+          description: List of likes
           items: { $ref: "#/components/schemas/like" }
           maxItems: 10000000
           minItems: 0
