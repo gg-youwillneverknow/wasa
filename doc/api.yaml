@@ -2,22 +2,28 @@ openapi: 3.0.3
 info:
   title: WASAPhoto
   version: 0.0.1
+servers: 
+  - url: http://localhost:3000
 paths: 
   /accounts/{userId}/edit:
     parameters:
     - { $ref: "#/components/parameters/userId" }
+    - in: query
+      name: newusername
+      schema: {$ref: '#/components/schemas/username'}
+      required: true
     put:
       operationId: setMyUserName
       summary: Updates user account by providing a new username.
       description: Allows the user specified by userId to update its user account. The content returned if successful is a username.
       tags: [user settings]
       responses:
-        '201':
+        '200':
           description: Username changed successfully.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/userInfo" }  
-        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/StatusNotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
         
   /users/{username}/profile:
@@ -34,7 +40,7 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/profile" }
-        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/StatusNotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" } 
  
   /users/{username}/photos/:
@@ -157,19 +163,6 @@ paths:
     parameters:
     - $ref: '#/components/parameters/username'
     - $ref: '#/components/parameters/photoId'
-    get: 
-      operationId: getPhoto
-      summary: Get the photo uploaded by the user. 
-      description: Allows the user to get the photo of the user specified by username.
-      tags: [photos]
-      responses:
-        '200':
-          description: Successful operation.
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/photo" } 
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
     delete: 
       operationId: deletePhoto
       summary: Delete a photo of the user and so remove it from their stream of photos.
@@ -178,6 +171,7 @@ paths:
         '204':
           description: Photo deleted successfully.
         "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/StatusNotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
         
   /users/{username}/photos/{photoId}/comments/:
@@ -195,9 +189,7 @@ paths:
       parameters: 
       - in: query
         name: commentId
-        schema: 
-          type: string
-          minLength: 78
+        schema: { $ref: "#/components/schemas/commentId" }
         required: false
       responses: 
         "200":
@@ -225,12 +217,6 @@ paths:
       summary: Post a comment on a photo of a user specified by username.
       description: A user can post a comment on a photo specified by PhotoId. 
       tags: [comments]
-      parameters:
-      - in: query
-        name: commenterName
-        schema:
-          type: string 
-        required: true 
       requestBody: 
         content:
           application/json:
@@ -617,6 +603,7 @@ components:
         type: string
         description: A description in human redeable terms for an order
         default: 'reverse chronological'
+        enum: ['chronological','reverse chronological']
         example: 'chronological'
         pattern: '^[a-zA-Z0-9]{5,40}$'
         minLength: 5
@@ -656,50 +643,32 @@ components:
       format: binary
     photoId:
       description: The identifier for a photo assigned by the server
-      type: object
-      properties:
-        identifier:
-          description: The identifier for the photo
-          type: string 
-          example: "abcdef012345"
-          pattern: '^[a-zA-Z0-9_.+-]{10,200}$'
-          minLength: 10 
-          maxLength: 200
-      required: 
-      - identifier
+      type: string 
+      example: "abcdef012345"
+      pattern: '^[a-zA-Z0-9_.+-]{10,200}$'
+      minLength: 10 
+      maxLength: 200
     userId: 
       description: The identifier for a user assigned by the server upon registration
-      type: object 
-      properties:
-        identifier:
-          description: The identifier for the user
-          type: string
-          example: "abcdef012345"
-          pattern: '^[a-zA-Z0-9_.+-]{10,200}$'
-          minLength: 10 
-          maxLength: 200
+      type: string
+      example: "abcdef012345"
+      pattern: '^[a-zA-Z0-9_.+-]{10,200}$'
+      minLength: 10 
+      maxLength: 200
     commentId: 
       description: The identifier for a comment assigned by the server upon registration
-      type: object 
-      properties: 
-        identifier: 
-          description: The identifier for the comment
-          type: string
-          example: "abcdef012345"
-          pattern: '^[a-zA-Z0-9_.+-]{10,200}$'
-          minLength: 10 
-          maxLength: 200
+      type: string
+      example: "abcdef012345"
+      pattern: '^[a-zA-Z0-9_.+-]{10,200}$'
+      minLength: 10 
+      maxLength: 200
     username: 
       description: The name chosen by the user for public identification by other users
-      type: object 
-      properties:
-        name:
-          description: The name of the user 
-          type: string 
-          example: Maria 
-          pattern: '^[a-zA-Z][a-zA-Z0-9_.]{10,25}$' 
-          minLength: 3 
-          maxLength: 16
+      type: string 
+      example: Maria 
+      pattern: '^[a-zA-Z][a-zA-Z0-9_.]{10,25}$' 
+      minLength: 3 
+      maxLength: 16
     Error:
       type: object 
       description: The error statement. 
@@ -714,41 +683,47 @@ components:
     stream: 
       type: object
       description: Photos in reverse chronological order by several users
-      properties: 
-        list: 
-          description: The list of photos of the stream
-          type: array 
-          items: { $ref: "#/components/schemas/photo" }
-          minItems: 0
-          maxItems: 1000
-          uniqueItems: true
+      type: array 
+      items: { $ref: "#/components/schemas/photo" }
+      minItems: 0
+      maxItems: 1000
+      uniqueItems: true
     photos: 
       type: object
       description: User's photos in reverse chronological order
-      properties: 
-        list: 
-          description: The list of photos of a profile
-          type: array 
-          items: { $ref: "#/components/schemas/photo" }
-          minItems: 0
-          maxItems: 100
-          uniqueItems: true
+      type: array 
+      items: { $ref: "#/components/schemas/photo" }
+      minItems: 0
+      maxItems: 100
+      uniqueItems: true
     photo: 
       type: object
       description: The photo includes the id with which one can identify the photo and the image and the time posted as well as the likes and comments put.
       properties:
-        photoId: { $ref: "#/components/schemas/photoId" }
+        ID: { $ref: "#/components/schemas/photoId" }
         dateTime: 
           description: The date of publishment of the photo
           type: string
           format: date-time
         likes: { $ref: "#/components/schemas/likes" }
         comments: { $ref: "#/components/schemas/comments" }
+        numlikes: 
+          type: integer
+          format: int32
+          minimum: 0 
+          maximum: 1000
+        numcomemnts: 
+          type: integer
+          format: int32
+          minimum: 0 
+          maximum: 1000
       required: 
       - photoId
       - dateTime
       - likes
       - comments
+      - numlikes
+      - numcomments
     follower:
       type: object
       description: A follower is reppresented by its username
@@ -795,77 +770,47 @@ components:
       type: object
       description: The comment is rappresented by the username who put the comment and the userId as well as the comment itself
       properties: 
-        commentId:
-          description: Comment identifier encapsulation for making it read only
-          type: object
-          properties:
-            identifier: { $ref: "#/components/schemas/commentId" }
+        ID:
+          description: The identifier for a comment assigned by the server upon registration
+          type: string
+          example: "abcdef012345"
+          pattern: '^[a-zA-Z0-9_.+-]{10,200}$'
+          minLength: 10 
+          maxLength: 200
           readOnly: true
-        commentText:
+        text:
           type: string 
           description: The text of the comment chosen by user
           example: Beautiful!
           pattern: '^[a-zA-Z0-9_.+-]{1,2200}$'
           minLength: 1
           maxLength: 2200
-        commenterUserName: 
-          type: object
-          description: Commenter username encapsulation for making it read only
-          properties:
-            identifier: { $ref: "#/components/schemas/username" }
-          readOnly: true
+        commenter: { $ref: "#/components/schemas/username" }
       required:
       - commentId
       - commentText
       - commenterUserName
     comments:
-      type: object
       description: The numeber and the list of comments put
-      properties:
-        number: 
-          description: Number of comments
-          type: integer
-          format: int32
-          minimum: 0 
-          maximum: 10000000
-          default: 0
-        list:
-          description: List of comments
-          type: array 
-          items: { $ref: "#/components/schemas/comment" }
-          minItems: 0
-          maxItems: 10000000
-          uniqueItems: true
-      required: 
-      - number 
-      - list
+      type: array 
+      items: { $ref: "#/components/schemas/comment" }
+      minItems: 0
+      maxItems: 1000
+      uniqueItems: true
     like: 
       type: object
       description: The user who put the like
       properties: 
-        id: { $ref: "#/components/schemas/userId" }
+        liker: { $ref: "#/components/schemas/username" }    
       required: 
-      - id
+      - liker
     likes:
-      type: object
-      description: The likes number and the list of users who liked
-      properties:
-        number: 
-          description: Number of likes
-          type: integer
-          format: int32
-          minimum: 0 
-          maximum: 10000000
-        list:
-          type: array 
-          description: List of likes
-          items: { $ref: "#/components/schemas/like" }
-          maxItems: 10000000
-          minItems: 0
-          uniqueItems: true
-      required: 
-      - number
-      - list
+      type: array
+      description: The list of users who liked
+      items: { $ref: "#/components/schemas/like" }
+      maxItems: 1000
+      minItems: 0
+      uniqueItems: true
     profile:  
       type: object
       properties:
