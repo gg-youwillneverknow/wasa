@@ -23,7 +23,7 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/userInfo" }  
-        "404": { $ref: "#/components/responses/StatusNotFound" }
+        "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
         
   /users/{username}/profile:
@@ -40,7 +40,7 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/profile" }
-        "404": { $ref: "#/components/responses/StatusNotFound" }
+        "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" } 
  
   /users/{username}/photos/:
@@ -171,7 +171,7 @@ paths:
         '204':
           description: Photo deleted successfully.
         "400": { $ref: "#/components/responses/BadRequest" }
-        "404": { $ref: "#/components/responses/StatusNotFound" }
+        "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
         
   /users/{username}/photos/{photoId}/comments/:
@@ -681,17 +681,15 @@ components:
           minLength: 5
           maxLength: 30
     stream: 
-      type: object
+      type: array
       description: Photos in reverse chronological order by several users
-      type: array 
       items: { $ref: "#/components/schemas/photo" }
       minItems: 0
       maxItems: 1000
       uniqueItems: true
     photos: 
-      type: object
+      type: array
       description: User's photos in reverse chronological order
-      type: array 
       items: { $ref: "#/components/schemas/photo" }
       minItems: 0
       maxItems: 100
@@ -841,4 +839,4 @@ components:
       - posts
       - photos
 security:
-  - bearerAuth: []      
+  - bearerAuth: []       
