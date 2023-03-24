@@ -154,39 +154,40 @@ func New(db *sql.DB) (AppDatabase, error) {
 		return nil, errors.New("database is required when building a AppDatabase")
 	}
 	var err error
+	_,_=db.Exec("PRAGMA foreign_keys = ON;")
 	// Check if table exists. If not, the database is empty, and we need to create the structure
 	var tableName string
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='users';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE users (
-    	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    	id INTEGER PRIMARY KEY AUTOINCREMENT,
     	username TEXT NOT NULL UNIQUE,
-		followers_num INTEGER
-		posts_num INTEGER NOT NULL
+		followers_num INTEGER NOT NULL,
+		posts_num INTEGER NOT NULL,
 		followings_num INTEGER NOT NULL
 		);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
+			return nil, fmt.Errorf("error creating database structure users: %w", err)
 		}
-		sqlStmt2 := `CREATE TRIGGER increase_followers AFTER INSERT ON followers FOR EACH ROW 
-					BEGIN 
-						UPDATE users SET users.followers_num = users.followers_num + 1 WHERE users.id=NEW.user_id
-					END;`
+	}
 
-		_, err = db.Exec(sqlStmt2)
+	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='photos';`).Scan(&tableName)
+	if errors.Is(err, sql.ErrNoRows) {
+		sqlStmt := `CREATE TABLE photos (
+    	id INTEGER PRIMARY KEY AUTOINCREMENT,
+    	datetime TEXT NOT NULL,
+		user_id INTEGER,
+		likes_num INTEGER NOT NULL,
+		comments_num INTEGER NOT NULL,
+		image TEXT NOT NULL, 
+		FOREIGN KEY (user_id) REFERENCES users(id)
+		);`
+		_, err = db.Exec(sqlStmt)
 		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
+			return nil, fmt.Errorf("error creating database structure photos: %w", err)
 		}
-		sqlStmt3 := `CREATE TRIGGER increase_followings AFTER INSERT ON followers FOR EACH ROW 
-					BEGIN 
-						UPDATE users SET users.followings_num = users.followings_num + 1 WHERE users.id=NEW.follower_id
-					END;`
 
-		_, err = db.Exec(sqlStmt3)
-		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
-		}
 		sqlStmt4 := `CREATE TRIGGER increase_posts AFTER INSERT ON photos FOR EACH ROW 
 					BEGIN 
 						UPDATE users SET users.posts_num = users.posts_num + 1 WHERE users.id=NEW.user_id
@@ -194,32 +195,24 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 		_, err = db.Exec(sqlStmt4)
 		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
+			return nil, fmt.Errorf("error creating database structure users trigger3: %w", err)
 		}
+
 	}
 
-	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='photos';`).Scan(&tableName)
+	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='comments';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE photos (
-    	id INTEGER NOT NULL PRIMARY KEY,
-    	datetime TEXT NOT NULL,
-		user_id INTEGER NOT NULL FOREIGN KEY REFERENCES users(id)
-		likes_num INTEGER NOT NULL
-		comments_num INTEGER NOT NULL
-		image TEXT NOT NULL 
+		sqlStmt := `CREATE TABLE comments (
+    	id INTEGER PRIMARY KEY AUTOINCREMENT,
+		commenter_id INTEGER,
+		comment TEXT NOT NULL,
+		photo_id INTEGER,
+		FOREIGN KEY (commenter_id) REFERENCES users(id),
+		FOREIGN KEY (photo_id) REFERENCES photos(id)
 		);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
-		}
-		sqlStmt2 := `CREATE TRIGGER increase_likes AFTER INSERT ON likes FOR EACH ROW 
-					BEGIN 
-						UPDATE photos SET photos.likes_num = photos.likes_num + 1 WHERE photos.id=NEW.photo_id
-					END;`
-
-		_, err = db.Exec(sqlStmt2)
-		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
+			return nil, fmt.Errorf("error creating database structure comments: %w", err)
 		}
 
 		sqlStmt3 := `CREATE TRIGGER increase_comments AFTER INSERT ON comments FOR EACH ROW 
@@ -229,64 +222,83 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 		_, err = db.Exec(sqlStmt3)
 		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
-		}
-
-	}
-
-	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='comments';`).Scan(&tableName)
-	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE comments (
-    	id INTEGER NOT NULL PRIMARY KEY,
-		commenter_id INTEGER NOT NULL FOREIGN KEY REFERENCES users(id)
-		comment TEXT NOT NULL
-		photo_id INTEGER NOT NULL FOREIGN KEY REFERENCES photos(id)
-		);`
-		_, err = db.Exec(sqlStmt)
-		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
+			return nil, fmt.Errorf("error creating database structure photos trigger2: %w", err)
 		}
 	}
 
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='likes';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE likes (
-		liker_id INTEGER NOT NULL PRIMARY KEY,
-		photo_id INTEGER NOT NULL PRIMARY KEY,
-		FOREIGN KEY (photo_id) REFERENCES photos(id)
-		FOREIGN KEY (liker_id) REFERENCES users(id)
+		liker_id INTEGER,
+		photo_id INTEGER,
+		FOREIGN KEY (photo_id) REFERENCES photos(id),
+		FOREIGN KEY (liker_id) REFERENCES users(id),
+		PRIMARY KEY (liker_id,photo_id)
 		);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
+			return nil, fmt.Errorf("error creating database structure likes: %w", err)
 		}
+
+		sqlStmt2 := `CREATE TRIGGER increase_likes AFTER INSERT ON likes FOR EACH ROW 
+					BEGIN 
+						UPDATE photos SET photos.likes_num = photos.likes_num + 1 WHERE photos.id=NEW.photo_id
+					END;`
+
+		_, err = db.Exec(sqlStmt2)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure photos trigger1: %w", err)
+		}
+
 	}
 
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='followers';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE followers (
-		follower_id INTEGER NOT NULL PRIMARY KEY,
-		user_id INTEGER NOT NULL PRIMARY KEY,
-		FOREIGN KEY (follower_id) REFERENCES users(id)
+		follower_id INTEGER,
+		user_id INTEGER,
+		PRIMARY KEY (follower_id,user_id),
+		FOREIGN KEY (follower_id) REFERENCES users(id),
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
+			return nil, fmt.Errorf("error creating database structure followers: %w", err)
 		}
+
+		sqlStmt2 := `CREATE TRIGGER increase_followers AFTER INSERT ON followers FOR EACH ROW 
+					BEGIN 
+						UPDATE users SET users.followers_num = users.followers_num + 1 WHERE users.id=NEW.user_id
+					END;`
+
+		_, err = db.Exec(sqlStmt2)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure users trigger1: %w", err)
+		}
+		sqlStmt3 := `CREATE TRIGGER increase_followings AFTER INSERT ON followers FOR EACH ROW 
+					BEGIN 
+						UPDATE users SET users.followings_num = users.followings_num + 1 WHERE users.id=NEW.follower_id
+					END;`
+
+		_, err = db.Exec(sqlStmt3)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure users trigger2: %w", err)
+		}
+
 	}
 
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='bans';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE bans (
-		banned_id INTEGER NOT NULL PRIMARY KEY,
-		user_id INTEGER NOT NULL PRIMARY KEY,
-		FOREIGN KEY (banned_id) REFERENCES users(id)
+		banned_id INTEGER,
+		user_id INTEGER,
+		PRIMARY KEY (banned_id,user_id)
+		FOREIGN KEY (banned_id) REFERENCES users(id),
 		FOREIGN KEY (user_id) REFERENCES users(id)
 		);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
+			return nil, fmt.Errorf("error creating database structure bans: %w", err)
 		}
 	}
 
