@@ -28,8 +28,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api"
-	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/database"
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api"
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/globaltime"
 	"github.com/ardanlabs/conf"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sirupsen/logrus"
@@ -38,7 +39,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 )
 
 // main is the program entry point. The only purpose of this function is to call run() and set the exit code if there is
@@ -59,7 +59,7 @@ func main() {
 // * waits for any termination event: SIGTERM signal (UNIX), non-recoverable server error, etc.
 // * closes the principal web server
 func run() error {
-	rand.Seed(time.Now().UnixNano())
+	rand.Seed(globaltime.Now().UnixNano())
 	// Load Configuration and defaults
 	cfg, err := loadConfiguration()
 	if err != nil {
