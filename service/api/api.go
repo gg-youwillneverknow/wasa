@@ -38,10 +38,11 @@ package api
 
 import (
 	"errors"
-	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/database"
+	"net/http"
+
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
 	"github.com/julienschmidt/httprouter"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
 
 // Config is used to provide dependencies and configuration to the New function.

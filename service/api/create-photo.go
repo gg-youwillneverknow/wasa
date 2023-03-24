@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 )
 
