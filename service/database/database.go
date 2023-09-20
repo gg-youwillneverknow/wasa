@@ -57,17 +57,13 @@ type Photo struct {
 	ID          uint64
 	Datetime    string
 	UserID      uint64
+	Owner 		string
 	NumLikes    uint32
 	NumComments uint32
 	Image       []byte
 }
 
 var ErrPhotoDoesNotExist = errors.New("photo does not exist")
-
-type Image struct {
-	ID    uint64
-	Image []byte
-}
 
 type User struct {
 	ID       uint64
@@ -77,20 +73,21 @@ type User struct {
 var ErrUserDoesNotExist = errors.New("user does not exist")
 
 type Following struct {
-	Following string
+	Username string
 }
 
 var ErrFollowingAlreadyExist = errors.New("following already exist")
 var ErrFollowingDoesNotExist = errors.New("following does not exist")
 
 type Follower struct {
-	Follower string
+	Username string
 }
 
 type Ban struct {
-	Ban string
+	Username string
 }
 
+var ErrBanAlreadyExist = errors.New("ban does not exist")
 var ErrBanDoesNotExist = errors.New("ban does not exist")
 
 // AppDatabase is the high level interface for the DB
@@ -100,15 +97,17 @@ type AppDatabase interface {
 
 	SelectProfile(username string) (uint32, uint32, uint32, error)
 
-	SelectPhotos(username string, page uint64, limit uint64, sort string) ([]Photo, error)
+	SelectPhotos(username string, page uint64, limit uint64) ([]Photo, error)
+	
+	SelectPhoto(photoId uint64) (Photo, error)
 
-	CreatePhoto(username string, photo Photo) (Photo, error)
+	CreatePhoto(photo Photo) (Photo, error)
 
 	SelectPhotosForStream(username string, page uint64, limit uint64) ([]Photo, error)
 
-	DeletePhoto(photoId string) error
+	DeletePhoto(photoId uint64) error
 
-	SelectImage(photoId uint64) (Image, error)
+	SelectImage(photoId uint64) ([]byte, error)
 
 	SelectComments(photoId uint64, page uint64, limit uint64) ([]Comment, error)
 
@@ -180,24 +179,27 @@ func New(db *sql.DB) (AppDatabase, error) {
 		user_id INTEGER,
 		likes_num INTEGER NOT NULL,
 		comments_num INTEGER NOT NULL,
-		image TEXT NOT NULL, 
-		FOREIGN KEY (user_id) REFERENCES users(id)
+		image BLOB NOT NULL, 
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 		);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure photos: %w", err)
 		}
 
-		sqlStmt4 := `CREATE TRIGGER increase_posts AFTER INSERT ON photos FOR EACH ROW 
-					BEGIN 
-						UPDATE users SET users.posts_num = users.posts_num + 1 WHERE users.id=NEW.user_id
-					END;`
+		sqlStmt2 := `CREATE TRIGGER increase_posts AFTER INSERT ON photos FOR EACH ROW BEGIN UPDATE users SET posts_num = posts_num + 1 WHERE id=NEW.user_id; END;`
 
-		_, err = db.Exec(sqlStmt4)
+		_, err = db.Exec(sqlStmt2)
 		if err != nil {
-			return nil, fmt.Errorf("error creating database structure users trigger3: %w", err)
+			return nil, fmt.Errorf("error creating database structure users trigger 1: %w", err)
 		}
 
+		sqlStmt3 := `CREATE TRIGGER decrease_posts AFTER DELETE ON photos FOR EACH ROW BEGIN UPDATE users SET posts_num = posts_num - 1 WHERE id=OLD.user_id; END;`
+
+		_, err = db.Exec(sqlStmt3)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure users trigger2: %w", err)
+		}
 	}
 
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='comments';`).Scan(&tableName)
@@ -207,23 +209,34 @@ func New(db *sql.DB) (AppDatabase, error) {
 		commenter_id INTEGER,
 		comment TEXT NOT NULL,
 		photo_id INTEGER,
-		FOREIGN KEY (commenter_id) REFERENCES users(id),
-		FOREIGN KEY (photo_id) REFERENCES photos(id)
+		FOREIGN KEY (commenter_id) REFERENCES users(id) ON DELETE CASCADE,
+		FOREIGN KEY (photo_id) REFERENCES photos(id) ON DELETE CASCADE
 		);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure comments: %w", err)
 		}
 
-		sqlStmt3 := `CREATE TRIGGER increase_comments AFTER INSERT ON comments FOR EACH ROW 
+		sqlStmt2 := `CREATE TRIGGER increase_comments AFTER INSERT ON comments FOR EACH ROW 
 					BEGIN 
-						UPDATE photos SET photos.comments_num = photos.comments_num + 1 WHERE photos.id=NEW.photo_id
+						UPDATE photos SET comments_num = comments_num + 1 WHERE photos.id=NEW.photo_id;
+					END;`
+
+		_, err = db.Exec(sqlStmt2)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure photos trigger1: %w", err)
+		}
+
+		sqlStmt3 := `CREATE TRIGGER decrease_comments AFTER DELETE ON comments FOR EACH ROW 
+					BEGIN 
+						UPDATE photos SET comments_num = comments_num - 1 WHERE photos.id=OLD.photo_id;
 					END;`
 
 		_, err = db.Exec(sqlStmt3)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure photos trigger2: %w", err)
 		}
+
 	}
 
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='likes';`).Scan(&tableName)
@@ -231,8 +244,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 		sqlStmt := `CREATE TABLE likes (
 		liker_id INTEGER,
 		photo_id INTEGER,
-		FOREIGN KEY (photo_id) REFERENCES photos(id),
-		FOREIGN KEY (liker_id) REFERENCES users(id),
+		FOREIGN KEY (photo_id) REFERENCES photos(id) ON DELETE CASCADE,
+		FOREIGN KEY (liker_id) REFERENCES users(id) ON DELETE CASCADE,
 		PRIMARY KEY (liker_id,photo_id)
 		);`
 		_, err = db.Exec(sqlStmt)
@@ -242,12 +255,22 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 		sqlStmt2 := `CREATE TRIGGER increase_likes AFTER INSERT ON likes FOR EACH ROW 
 					BEGIN 
-						UPDATE photos SET photos.likes_num = photos.likes_num + 1 WHERE photos.id=NEW.photo_id
+						UPDATE photos SET likes_num = likes_num + 1 WHERE id=NEW.photo_id;
 					END;`
 
 		_, err = db.Exec(sqlStmt2)
 		if err != nil {
-			return nil, fmt.Errorf("error creating database structure photos trigger1: %w", err)
+			return nil, fmt.Errorf("error creating database structure photos trigger3: %w", err)
+		}
+
+		sqlStmt3 := `CREATE TRIGGER decrease_likes AFTER DELETE ON likes FOR EACH ROW 
+		BEGIN 
+			UPDATE photos SET likes_num = likes_num - 1 WHERE id=OLD.photo_id;
+		END;`
+
+		_, err = db.Exec(sqlStmt3)
+		if err != nil {
+		return nil, fmt.Errorf("error creating database structure photos trigger4: %w", err)
 		}
 
 	}
@@ -258,8 +281,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 		follower_id INTEGER,
 		user_id INTEGER,
 		PRIMARY KEY (follower_id,user_id),
-		FOREIGN KEY (follower_id) REFERENCES users(id),
-		FOREIGN KEY (user_id) REFERENCES users(id)
+		FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 		);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
@@ -268,21 +291,42 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 		sqlStmt2 := `CREATE TRIGGER increase_followers AFTER INSERT ON followers FOR EACH ROW 
 					BEGIN 
-						UPDATE users SET users.followers_num = users.followers_num + 1 WHERE users.id=NEW.user_id
+						UPDATE users SET followers_num = followers_num + 1 WHERE id=NEW.user_id;
 					END;`
 
 		_, err = db.Exec(sqlStmt2)
 		if err != nil {
-			return nil, fmt.Errorf("error creating database structure users trigger1: %w", err)
+			return nil, fmt.Errorf("error creating database structure users trigger3: %w", err)
 		}
-		sqlStmt3 := `CREATE TRIGGER increase_followings AFTER INSERT ON followers FOR EACH ROW 
-					BEGIN 
-						UPDATE users SET users.followings_num = users.followings_num + 1 WHERE users.id=NEW.follower_id
-					END;`
+
+		sqlStmt3 := `CREATE TRIGGER decrease_followers AFTER DELETE ON followers FOR EACH ROW 
+		BEGIN 
+			UPDATE users SET followers_num = followers_num - 1 WHERE id=OLD.user_id;
+		END;`
 
 		_, err = db.Exec(sqlStmt3)
 		if err != nil {
-			return nil, fmt.Errorf("error creating database structure users trigger2: %w", err)
+		return nil, fmt.Errorf("error creating database structure users trigger4: %w", err)
+		}
+		
+		sqlStmt4 := `CREATE TRIGGER increase_followings AFTER INSERT ON followers FOR EACH ROW 
+					BEGIN 
+						UPDATE users SET followings_num = followings_num + 1 WHERE id=NEW.follower_id;
+					END;`
+
+		_, err = db.Exec(sqlStmt4)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure users trigger5: %w", err)
+		}
+
+		sqlStmt5 := `CREATE TRIGGER decrease_followings AFTER DELETE ON followers FOR EACH ROW 
+		BEGIN 
+			UPDATE users SET followings_num = followings_num - 1 WHERE id=OLD.follower_id;
+		END;`
+
+		_, err = db.Exec(sqlStmt5)
+		if err != nil {
+		return nil, fmt.Errorf("error creating database structure users trigger6: %w", err)
 		}
 
 	}
@@ -293,8 +337,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 		banned_id INTEGER,
 		user_id INTEGER,
 		PRIMARY KEY (banned_id,user_id)
-		FOREIGN KEY (banned_id) REFERENCES users(id),
-		FOREIGN KEY (user_id) REFERENCES users(id)
+		FOREIGN KEY (banned_id) REFERENCES users(id) ON DELETE CASCADE,
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 		);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {

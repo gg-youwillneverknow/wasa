@@ -8,21 +8,23 @@ paths:
   /accounts/{userId}/edit:
     parameters:
     - { $ref: "#/components/parameters/userId" }
-    - in: query
-      name: newusername
-      schema: {$ref: '#/components/schemas/username'}
-      required: true
     put:
       operationId: setMyUserName
       summary: Updates user account by providing a new username.
       description: Allows the user specified by userId to update its user account. The content returned if successful is a username.
       tags: [user settings]
+      requestBody: 
+        content: 
+          application/json:       
+            schema: {$ref: '#/components/schemas/Username'}
+        required: true
       responses:
         '200':
           description: Username changed successfully.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/userInfo" }  
+              schema: { $ref: "#/components/schemas/User" }  
+        "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
         
@@ -39,7 +41,7 @@ paths:
           description: Successful operation.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/profile" }
+              schema: { $ref: "#/components/schemas/Profile" }
         "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" } 
  
@@ -48,7 +50,6 @@ paths:
     - $ref: '#/components/parameters/username'
     - $ref: '#/components/parameters/page'
     - $ref: '#/components/parameters/limit'
-    - $ref: '#/components/parameters/sort'
     get: 
       operationId: getPhotos
       summary: Get the photos uploaded by the user. 
@@ -59,7 +60,7 @@ paths:
           description: Successful operation.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/photos" } 
+              schema: { $ref: "#/components/schemas/Photos" } 
           headers:
             Pagination-Count: 
               description: Total number of items
@@ -82,31 +83,32 @@ paths:
       tags: [photos]
       requestBody: 
         content:
-          image/png:
-            schema: { $ref: "#/components/schemas/image" }
+          multipart/form-data:
+            schema: { $ref: "#/components/schemas/Image" }
         required: true
       responses:
         '201':
           description: Photo uploaded successfully.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/photo" } 
+              schema: { $ref: "#/components/schemas/Photo" } 
           links:
             GetImageByPhotoId:  
               operationId: getRawImage
               parameters:
-                imageId: '$response.body#/photoId'
+                imageId: '$response.body#/PhotoId'
               description: >
-                The `photoId` value returned in the response can be used as
+                The `PhotoId` value returned in the response can be used as
                 the `photoId` parameter in `GET /images/{photoId}`.
             GetPhotoByPhotoId:  
               operationId: getPhoto
               parameters:
-                photoId: '$response.body#/photoId'
+                photoId: '$response.body#/PhotoId'
               description: >
-                The `photoId` value returned in the response can be used as
+                The `PhotoId` value returned in the response can be used as
                 the `photoId` parameter in `GET /users/{username}/photos/{photoId}`.
         "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
   /images/{photoId}:
@@ -121,28 +123,27 @@ paths:
         '200':
           description: Successful operation.
           content:
-            image/png: 
-              schema: { $ref: "#/components/schemas/image" }
+            image/jpeg: 
+              schema: { $ref: "#/components/schemas/Image" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  
+
   /users/{username}/stream:
     parameters:
       - $ref: '#/components/parameters/username'
       - $ref: '#/components/parameters/page'
       - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/sort'
     get: 
       operationId: getMyStream
       summary: Get the photos of the followed users.
       description: Allows a user specified by username to get their stream which is a collection of photos of different users. 
-      tags: [steam]
+      tags: [stream]
       responses:
         '200':
           description: Successful operation.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/stream" }
+              schema: { $ref: "#/components/schemas/Photos" }
           headers:
             Pagination-Count: 
               description: Total number of items
@@ -167,9 +168,23 @@ paths:
       operationId: deletePhoto
       summary: Delete a photo of the user and so remove it from their stream of photos.
       description: Allows the user to delete the photo specified by photoID of the user specified by username.
+      tags: [photos]
       responses:
-        '204':
-          description: Photo deleted successfully.
+        '204':  {description: Photo deleted successfully. }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFoundError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+    get: 
+      operationId: getPhoto
+      summary: Get the photo with the specified ID. 
+      description: Allows the user to get photo of the user specified by username.
+      tags: [photos]
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Photo" } 
         "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -180,23 +195,17 @@ paths:
     - $ref: '#/components/parameters/photoId'
     - $ref: '#/components/parameters/page'
     - $ref: '#/components/parameters/limit'
-    - $ref: '#/components/parameters/sort'
     get: 
       operationId: getCommentPhoto
       summary: Get comments of a photo of a user specified by username.
       description: A user can get the comments of a photo specified by photoId from the photos of the user specified by username. 
       tags: [comments]
-      parameters: 
-      - in: query
-        name: commentId
-        schema: { $ref: "#/components/schemas/commentId" }
-        required: false
       responses: 
         "200":
           description: Successfull operation.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/comments" }
+              schema: { $ref: "#/components/schemas/Comments" }
           headers:
             Pagination-Count: 
               description: Total number of items
@@ -215,19 +224,19 @@ paths:
     post: 
       operationId: commentPhoto
       summary: Post a comment on a photo of a user specified by username.
-      description: A user can post a comment on a photo specified by PhotoId. 
+      description: A user can post a comment on a photo specified by photoId. 
       tags: [comments]
       requestBody: 
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/comment" }
+            schema: { $ref: "#/components/schemas/Comment" }
         required: true
       responses: 
         "201":
           description: Comment created successfully.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/comment" }
+              schema: { $ref: "#/components/schemas/Comment" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
         
@@ -247,16 +256,15 @@ paths:
         "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /users/{username}/photos/{photoId}/likes/:
+  /users/{username}/photos/{photoId}/likes:
     parameters:
     - $ref: '#/components/parameters/username'
     - $ref: '#/components/parameters/photoId'
     - $ref: '#/components/parameters/page'
     - $ref: '#/components/parameters/limit'
-    - $ref: '#/components/parameters/sort'
     get: 
       operationId: getLikes
-      summary: Get likes of a photo specified by photoId of a user specified by username.
+      summary: Get likes of a photo.
       description: A user can get the likes on a photo specified by photoId of a user username.
       tags: [likes]
       responses: 
@@ -264,7 +272,7 @@ paths:
           description: Successful operation.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/likes" }
+              schema: { $ref: "#/components/schemas/Likes" }
           headers:
             Pagination-Count: 
               description: Total number of items
@@ -288,62 +296,41 @@ paths:
     - $ref: '#/components/parameters/userId'
     put: 
       operationId: likePhoto
-      summary: Put a like on a photo of a user specified by username. The id of the like is the id of the user who puts the like.
-      description: The user specified by userId can put likes on a photo specified by photoId.
+      summary: Put a like on a photo.
+      description: The user specified by userId can put a like on a photo specified by photoId.
       tags: [likes]
       responses: 
-        "201":
-          description: Like put successfully 
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/like" }
+        "200": {description: Like put successfully. }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
     delete:
       operationId: unlikePhoto
       summary: Remove a like.
+      description: The user specified by userId can remove a like on a photo specified by photoId.
+      tags: [likes]
       responses:
         "204": { description: Like removed successfully. }
         "400": { $ref: "#/components/responses/BadRequest" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-
-  /users/{username}/followers/{followername}:
-    parameters:
-    - $ref: '#/components/parameters/username'
-    - $ref: '#/components/parameters/followername'
-    delete:
-      operationId: removeFollower
-      summary: The user specified by username will remove a follower specified by followername.
-      description: The user specified by username can remove a follower specified by followername. 
-      tags: [follower]
-      responses:
-        "204": { description: Follower removed successfully. }
-        "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  
+
   /users/{username}/followers/:
     parameters:
     - $ref: '#/components/parameters/username'
     - $ref: '#/components/parameters/page'
     - $ref: '#/components/parameters/limit'
-    - $ref: '#/components/parameters/sort'
     get: 
       operationId: getFollowers
       summary: Get followers of a user specified by username.
       description: A user can get the followers of the user specified by username. 
       tags: [followers]
-      parameters: 
-      - in: query
-        name: followername
-        schema: {$ref: '#/components/schemas/username'}
-        required: false
       responses: 
         "200":
           description: Successful operation.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/followers_list" }
+              schema: { $ref: "#/components/schemas/Followers" }
           headers:
             Pagination-Count: 
               description: Total number of items
@@ -358,6 +345,7 @@ paths:
               schema:
                 type: integer
         "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }  
 
   /users/{username}/followings/:
@@ -365,23 +353,17 @@ paths:
     - $ref: '#/components/parameters/username'
     - $ref: '#/components/parameters/page'
     - $ref: '#/components/parameters/limit'
-    - $ref: '#/components/parameters/sort'
     get: 
       operationId: getFollowings
       summary: Get followings of a user specified by username.
       description: A user can get the users they are followed by the user specified by username. 
       tags: [followings]
-      parameters: 
-      - in: query
-        name: followingname
-        schema: {$ref: '#/components/schemas/username'}
-        required: false
       responses: 
         "200":
           description: Successful operation.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/followings_list" }
+              schema: { $ref: "#/components/schemas/Followings" }
           headers:
             Pagination-Count: 
               description: Total number of items
@@ -396,6 +378,7 @@ paths:
               schema:
                 type: integer
         "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }  
 
   /users/{username}/followings/{followingname}:
@@ -408,20 +391,17 @@ paths:
       description: The user specified by username can follow a user specified by following name.
       tags: [followings]
       responses: 
-        "201":
-          description: User followed successfully.
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/following" }
+        "200": {description: User followed successfully.}
         "400": { $ref: "#/components/responses/BadRequest" }
-        "404": { description: User not found. }
+        "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
     delete:
       operationId: unfollowUser
       summary: Unfollow a user.
       description: The user specified by username can unfollow a user specified by following name.
+      tags: [followings]
       responses:
-        "204": { description: User unfollowed successfully. }
+        "204": {description: User unfollowed successfully.}
         "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -431,17 +411,11 @@ paths:
     - $ref: '#/components/parameters/username'
     - $ref: '#/components/parameters/page'
     - $ref: '#/components/parameters/limit'
-    - $ref: '#/components/parameters/sort'
     get:
       operationId: getBans
       summary: Get all users banned by the user username.
       description: The user specified by username can get all the bans they have put. 
       tags: [bans]
-      parameters: 
-      - in: query
-        name: bannedname
-        schema: { $ref: "#/components/schemas/username" }
-        required: false
       responses: 
         "200":
           description: Successful operation.
@@ -462,6 +436,7 @@ paths:
               schema:
                 type: integer
         "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" } 
 
   /users/{username}/bans/{bannedname}:
@@ -480,6 +455,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/banned" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" } 
     delete:
       operationId: unbanUser
@@ -538,13 +514,13 @@ components:
       in: path
       name: username 
       description: The name of a user
-      schema: {$ref: '#/components/schemas/username'}
+      schema: {$ref: '#/components/schemas/Username'}
       required: true
     userId: 
       in: path
       name: userId
       description: The identifier for a user
-      schema: {$ref: '#/components/schemas/userId'}
+      schema: {$ref: '#/components/schemas/ID'}
       required: true
     followername: 
       in: path
@@ -594,20 +570,6 @@ components:
         minimum: 10
         maximum: 100
         multipleOf: 10
-    sort:
-      name: sort
-      in: query
-      description: Sorting order of items
-      required: false
-      schema:
-        type: string
-        description: A description in human redeable terms for an order
-        default: 'reverse chronological'
-        enum: ['chronological','reverse chronological']
-        example: 'chronological'
-        pattern: '^[a-zA-Z0-9]{5,40}$'
-        minLength: 5
-        maxLength: 40
   responses:
     BadRequest:
       description: Request was formulated badly
@@ -628,215 +590,209 @@ components:
           schema: 
             $ref: '#/components/schemas/Error'
   schemas:
-    userInfo:
+    User:
       description: The information that characterizes a user
       type: object 
       properties: 
-        username: { $ref: "#/components/schemas/username" }
-        userId: { $ref: "#/components/schemas/userId" }
+        username: { $ref: "#/components/schemas/Username" }
+        userId: { $ref: "#/components/schemas/ID" }
       required: 
-      - username 
-      - userId
-    image: 
+      - Username 
+      - ID
+    Image: 
       description: The binary file corrisponding to the image
       type: string 
       format: binary
-    photoId:
+      minLength: 1
+      maxLength: 100000
+    PhotoId:
       description: The identifier for a photo assigned by the server
-      type: string 
-      example: "abcdef012345"
-      pattern: '^[a-zA-Z0-9_.+-]{10,200}$'
-      minLength: 10 
-      maxLength: 200
-    userId: 
+      type: integer
+      example: 1
+      minimum: 0 
+      maximum: 1000
+    ID: 
       description: The identifier for a user assigned by the server upon registration
-      type: string
-      example: "abcdef012345"
-      pattern: '^[a-zA-Z0-9_.+-]{10,200}$'
-      minLength: 10 
-      maxLength: 200
-    commentId: 
+      type: integer
+      example: 1
+      minimum: 0 
+      maximum: 1000
+    CommentId: 
       description: The identifier for a comment assigned by the server upon registration
-      type: string
-      example: "abcdef012345"
-      pattern: '^[a-zA-Z0-9_.+-]{10,200}$'
-      minLength: 10 
-      maxLength: 200
-    username: 
+      type: integer
+      example: 1
+      minimum: 0 
+      maximum: 1000
+    Username: 
       description: The name chosen by the user for public identification by other users
       type: string 
       example: Maria 
-      pattern: '^[a-zA-Z][a-zA-Z0-9_.]{10,25}$' 
-      minLength: 3 
-      maxLength: 16
+      pattern: '^[a-zA-Z][a-zA-Z0-9_.]{4,24}$'
+      minLength: 5
+      maxLength: 25
     Error:
       type: object 
-      description: The error statement. 
+      description: The error statement
       properties:
         statement:
           description: The text from the server for exaplaing the error
           type: string
-          example: Error traced back to invalid username.
+          example: Invalid username.
           pattern: '^[a-zA-Z0-9.]{5,30}$'
           minLength: 5
-          maxLength: 30
-    stream: 
+          maxLength: 50
+    Photos: 
       type: array
-      description: Photos in reverse chronological order by several users
-      items: { $ref: "#/components/schemas/photo" }
+      description: User's photos in reverse chronological order
+      items: { $ref: "#/components/schemas/Photo" }
       minItems: 0
       maxItems: 1000
       uniqueItems: true
-    photos: 
-      type: array
-      description: User's photos in reverse chronological order
-      items: { $ref: "#/components/schemas/photo" }
-      minItems: 0
-      maxItems: 100
-      uniqueItems: true
-    photo: 
+    Photo: 
       type: object
       description: The photo includes the id with which one can identify the photo and the image and the time posted as well as the likes and comments put.
       properties:
-        ID: { $ref: "#/components/schemas/photoId" }
-        dateTime: 
+        ID: { $ref: "#/components/schemas/PhotoId" }
+        Owner: { $ref: "#/components/schemas/Username" }
+        Datetime: 
           description: The date of publishment of the photo
           type: string
           format: date-time
-        likes: { $ref: "#/components/schemas/likes" }
-        comments: { $ref: "#/components/schemas/comments" }
-        numlikes: 
+        NumLikes: 
+          description: The number of likes of the photo
           type: integer
           format: int32
+          example: 1
           minimum: 0 
           maximum: 1000
-        numcomemnts: 
+        NumComments: 
+          description: The number of comments of the photo
           type: integer
           format: int32
+          example: 1
           minimum: 0 
           maximum: 1000
       required: 
-      - photoId
-      - dateTime
-      - likes
-      - comments
-      - numlikes
-      - numcomments
-    follower:
+      - ID
+      - Datetime
+      - Owner
+      - NumLikes
+      - NumComments
+    Follower:
       type: object
       description: A follower is reppresented by its username
       properties:
-        followerUserName: { $ref: "#/components/schemas/username" }
+        Username: { $ref: "#/components/schemas/Username" }
       required: 
-      - followerUserName
-    followers_list:
+      - Username
+    Followers:
       type: array
       description: The list of followers
-      items: { $ref: "#/components/schemas/follower" }
+      items: { $ref: "#/components/schemas/Follower" }
       minItems: 0
       maxItems: 1000
       uniqueItems: true
-    following:
+    Following:
       type: object
       description: The following user is reppresented by its username
       properties:
-        followingUserName: { $ref: "#/components/schemas/username" }
+        username: { $ref: "#/components/schemas/Username" }
       required: 
-      - followingUserName
-    followings_list:
+      - Username
+    Followings:
       type: array
       description: The list of users followed
-      items: { $ref: "#/components/schemas/following" }
+      items: { $ref: "#/components/schemas/Following" }
       minItems: 0
       maxItems: 1000
       uniqueItems: true
-    banned:
+    Ban:
       type: object
       description: A banned user is reppresented by its username
       properties:
-        bannedUserName: { $ref: "#/components/schemas/username" }
+        Username: { $ref: "#/components/schemas/Username" }
       required: 
-      - bannedUserName
-    banned_list:
+      - Username
+    Bans:
       description: The list users banned
       type: array
-      items: { $ref: "#/components/schemas/banned" }
+      items: { $ref: "#/components/schemas/Ban" }
       minItems: 0
-      maxItems: 40
+      maxItems: 1000
       uniqueItems: true
-    comment: 
+    Comment: 
       type: object
-      description: The comment is rappresented by the username who put the comment and the userId as well as the comment itself
+      description: The comment is rappresented by an id, the username who put the comment as well as the comment itself
       properties: 
         ID:
           description: The identifier for a comment assigned by the server upon registration
-          type: string
-          example: "abcdef012345"
-          pattern: '^[a-zA-Z0-9_.+-]{10,200}$'
-          minLength: 10 
-          maxLength: 200
+          type: integer
+          example: 1
+          minimum: 0 
+          maximum: 1000
           readOnly: true
-        text:
+        Text:
           type: string 
           description: The text of the comment chosen by user
           example: Beautiful!
-          pattern: '^[a-zA-Z0-9_.+-]{1,2200}$'
+          pattern: '^[a-zA-Z0-9_.+-]{1,200}$'
           minLength: 1
-          maxLength: 2200
-        commenter: { $ref: "#/components/schemas/username" }
+          maxLength: 200
+        Commenter: { $ref: "#/components/schemas/Username" }
       required:
-      - commentId
-      - commentText
-      - commenterUserName
-    comments:
-      description: The numeber and the list of comments put
+      - ID
+      - Text
+      - Commenter
+    Comments:
+      description: The list of comments 
       type: array 
-      items: { $ref: "#/components/schemas/comment" }
+      items: { $ref: "#/components/schemas/Comment" }
       minItems: 0
       maxItems: 1000
       uniqueItems: true
-    like: 
+    Like: 
       type: object
       description: The user who put the like
       properties: 
-        liker: { $ref: "#/components/schemas/username" }    
+        Liker: { $ref: "#/components/schemas/Username" }    
       required: 
-      - liker
-    likes:
+      - Username
+    Likes:
       type: array
       description: The list of users who liked
-      items: { $ref: "#/components/schemas/like" }
-      maxItems: 1000
+      items: { $ref: "#/components/schemas/Like" }
       minItems: 0
+      maxItems: 1000
       uniqueItems: true
-    profile:  
+    Profile:  
       type: object
       properties:
-        username: { $ref: "#/components/schemas/username" }
-        followers:
+        Username: { $ref: "#/components/schemas/Username" }
+        Followers:
           description: Number of followers of profile
           type: integer 
           format: int32
+          example: 1
           minimum: 0 
           maximum: 1000
-        followings:
+        Followings:
           description: Number of followings by profile
           type: integer 
           format: int32
+          example: 1
           minimum: 0 
           maximum: 1000
-        posts:
-          description: Number of posts in stream
+        Posts:
+          description: Number of posts of user
           type: integer
           format: int32
+          example: 1
           minimum: 0 
           maximum: 100
-        photos: { $ref: "#/components/schemas/photos" }
       required: 
-      - username
-      - followers
-      - followings
-      - posts
-      - photos
+      - Username
+      - Followers
+      - Followings
+      - Posts
 security:
   - bearerAuth: []       

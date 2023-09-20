@@ -1,14 +1,16 @@
 <script>
 export default {
+	name: "ErrorMsg",
 	props: ['msg']
 }
 </script>
 
 <template>
 	<div class="alert alert-danger" role="alert">
-		{{ msg }}
+		{{ this.msg }}
+		
 	</div>
 </template>
 
-<style>
+<style scoped>
 </style>

@@ -1,50 +1,41 @@
 package database
+import "database/sql"
 
 func (db *appdbimpl) UpdateBan(username string, bannedusername string) error {
-
-	rows, err := db.c.Query(`SELECT id FROM users WHERE username=?`, username)
-	if err != nil {
-		return err
-	}
-	defer func() { _ = rows.Close() }()
-
-	// Here we read the resultset and we build the list to be returned
 	var userId uint64
-	err = rows.Scan(&userId)
-	if err != nil {
-		return err
-	}
-
-	if rows.Err() != nil {
-		return err
-	}
-
-	rows2, err2 := db.c.Query(`SELECT id FROM users WHERE username=?`, bannedusername)
-	if err2 != nil {
-		return err2
-	}
-	defer func() { _ = rows2.Close() }()
-
-	// Here we read the resultset and we build the list to be returned
 	var bannedId uint64
-	err2 = rows2.Scan(&bannedId)
-	if err2 != nil {
+
+	row := db.c.QueryRow(`SELECT id FROM users WHERE username=?`, username)
+	
+	if err := row.Scan(&userId); err != nil {
+		if err == sql.ErrNoRows {
+			return ErrUserDoesNotExist
+		}
+		return err
+	}
+	if err := row.Err(); err!= nil {
+		return err
+	}
+
+	row2 := db.c.QueryRow(`SELECT id FROM users WHERE username=?`, bannedusername)
+	if err2 := row2.Scan(&bannedId); err2 != nil {
+		if err2 == sql.ErrNoRows {
+			return ErrUserDoesNotExist
+		}
+		return err2
+	}
+	if err2 := row2.Err(); err2!= nil {
 		return err2
 	}
 
-	if rows.Err() != nil {
-		return err2
-	}
-
-	res, err := db.c.Exec(`INSERT INTO bans (user_id, banned_id) VALUES (?, ?) WHERE NOT EXISTS (SELECT * FROM bans WHERE user_id=? AND banned_id=?)`,
+	res, err := db.c.Exec(`INSERT INTO bans (user_id, banned_id) VALUES (?, ?)`,
 		userId, bannedId)
 
 	affected, err := res.RowsAffected()
 	if err != nil {
 		return err
 	} else if affected == 0 {
-		// If we didn't delete any row, then the fountain didn't exist
-		return nil
+		return ErrBanAlreadyExist
 	}
 	return nil
 }

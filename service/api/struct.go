@@ -1,7 +1,6 @@
 package api
 
 import "git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
-
 // Fountain struct represent a fountain in every data exchange with the external world via REST API. JSON tags have been
 // added to the struct to conform to the OpenAPI specifications regarding JSON key names.
 // Note: there is a similar struct in the database package. See Fountain.FromDatabase (below) to understand why.
@@ -29,23 +28,22 @@ type Profile struct {
 	Followers  uint32  `json:"followers"`
 	Followings uint32  `json:"followings"`
 	Posts      uint32  `json:"posts"`
-	Photos     []Photo `json:"photos"`
 }
 
 type Photo struct {
 	ID          uint64    `json:"ID"`
+	Owner		string 	  `json:"owner"`
 	Datetime    string    `json:"dateTime"`
-	Likes       []Like    `json:"likes"`
-	Comments    []Comment `json:"comments"`
 	NumLikes    uint32    `json:"likesnum"`
 	NumComments uint32    `json:"commentsnum"`
 }
 
-func (f *Photo) ToDatabase(img []byte) database.Photo {
+func (f *Photo) ToDatabase(img []byte, user uint64, username string) database.Photo {
 	return database.Photo{
 		ID:          f.ID,
 		Datetime:    f.Datetime,
-		UserID:      0,
+		UserID:      user,
+		Owner: 		 username,
 		NumLikes:    0,
 		NumComments: 0,
 		Image:       img,
@@ -55,27 +53,9 @@ func (f *Photo) ToDatabase(img []byte) database.Photo {
 func (f *Photo) FromDatabase(fountain database.Photo) {
 	f.ID = fountain.ID
 	f.Datetime = fountain.Datetime
-	f.Likes = nil
-	f.Comments = nil
 	f.NumLikes = fountain.NumLikes
-	f.NumComments = fountain.NumLikes
-}
-
-type Image struct {
-	ID    uint64
-	Image []byte
-}
-
-func (f *Image) ToDatabase() database.Image {
-	return database.Image{
-		ID:    f.ID,
-		Image: f.Image,
-	}
-}
-
-func (f *Image) FromDatabase(fountain database.Image) {
-	f.ID = fountain.ID
-	f.Image = fountain.Image
+	f.NumComments = fountain.NumComments
+	f.Owner = fountain.Owner
 }
 
 type Comment struct {
@@ -99,11 +79,11 @@ func (f *Comment) FromDatabase(fountain database.Comment) {
 }
 
 func (f *Comment) IsValid() bool {
-	return 0 <= len(f.Text) && len(f.Text) <= 90
+	return 1 <= len(f.Text) && len(f.Text) <= 200
 }
 
 type Like struct {
-	Liker string `json:"liker"`
+	Liker string `json:"Username"`
 }
 
 func (f *Like) ToDatabase() database.Like {
@@ -114,6 +94,34 @@ func (f *Like) ToDatabase() database.Like {
 
 func (f *Like) FromDatabase(fountain database.Like) {
 	f.Liker = fountain.Liker
+}
+
+type Following struct {
+	Username string
+}
+
+func (f *Following) ToDatabase() database.Following {
+	return database.Following{
+		Username: f.Username,
+	}
+}
+
+func (f *Following) FromDatabase(fountain database.Following) {
+	f.Username = fountain.Username
+}
+
+type Follower struct {
+	Username string
+}
+
+func (f *Follower) ToDatabase() database.Follower {
+	return database.Follower{
+		Username: f.Username,
+	}
+}
+
+func (f *Follower) FromDatabase(fountain database.Follower) {
+	f.Username = fountain.Username
 }
 
 // FromDatabase populates the struct with data from the database, overwriting all values.

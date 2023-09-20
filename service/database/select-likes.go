@@ -1,34 +1,30 @@
 package database
 
 func (db *appdbimpl) SelectLikes(photoId uint64, page uint64, limit uint64) ([]Like, error) {
-
-	const query = `
-	DECLARE @PageNumber AS INT
-	DECLARE @RowsOfPage AS INT
-	SET @PageNumber=?
-	SET @RowsOfPage=?
-	SELECT users.username FROM users INNER JOIN likes ON users.id=likes.liker_id WHERE likes.photo_id=?
-	OFFSET (@PageNumber-1)*@RowsOfPage ROWS
-	FETCH NEXT @RowsOfPage ROWS ONLY`
-
+	var offset = (page -1)*limit
 	var ret []Like
 
-	rows, err := db.c.Query(query, page, limit, photoId)
+	const query = `
+	SELECT users.username FROM users INNER JOIN likes ON users.id=likes.liker_id WHERE likes.photo_id=?
+	LIMIT ?
+	OFFSET ?`
+
+	rows, err := db.c.Query(query, photoId, limit, offset)
 	if err != nil {
-		return nil, err
+		return ret, err
 	}
 	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
-		var c Like
-		err = rows.Scan(&c.Liker)
+		var l Like
+		err = rows.Scan(&l.Liker)
 		if err != nil {
-			return nil, err
+			return ret, err
 		}
-		ret = append(ret, c)
+		ret = append(ret, l)
 	}
 	if rows.Err() != nil {
-		return nil, err
+		return ret, err
 	}
 
 	return ret, nil

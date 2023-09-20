@@ -1,20 +1,20 @@
 package database
 
 func (db *appdbimpl) SelectPhotosForStream(username string, page uint64, limit uint64) ([]Photo, error) {
+	var offset = (page -1)*limit
 	const query = `
-	DECLARE @PageNumber AS INT
-	DECLARE @RowsOfPage AS INT
-	SET @PageNumber=?
-	SET @RowsOfPage=?
-	SELECT photos.id, photos.user_id, photos.datetime, photos.comments_num, photos.likes_num FROM photos WHERE photos.user_id IN (SELECT followers.user_id INNER JOIN users ON followers.follower_id=users.id WHERE users.username=?)  
-	ORDER BY photos.datetime
-	OFFSET (@PageNumber-1)*@RowsOfPage ROWS
-	FETCH NEXT @RowsOfPage ROWS ONLY`
-
+	SELECT photos.id, photos.datetime, photos.user_id, photos.comments_num, photos.likes_num, users.username 
+	FROM photos INNER JOIN users ON photos.user_id=users.id 
+	WHERE photos.user_id IN 
+	(SELECT followers.user_id FROM followers INNER JOIN users ON followers.follower_id=users.id 
+		WHERE users.username=?)  
+	ORDER BY photos.datetime DESC
+	LIMIT ?
+	OFFSET ?`
 	var ret []Photo
 
 	// Issue the query, using the bounding box as filter
-	rows, err := db.c.Query(query, page, limit, username)
+	rows, err := db.c.Query(query, username, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -23,10 +23,11 @@ func (db *appdbimpl) SelectPhotosForStream(username string, page uint64, limit u
 	// Read all fountains in the resultset
 	for rows.Next() {
 		var p Photo
-		err = rows.Scan(&p.ID, &p.UserID, &p.Datetime, &p.NumComments, &p.NumLikes)
+		err = rows.Scan(&p.ID, &p.Datetime, &p.UserID, &p.NumComments, &p.NumLikes, &p.Owner)
 		if err != nil {
 			return nil, err
 		}
+		ret = append(ret, p)
 	}
 	if rows.Err() != nil {
 		return nil, err

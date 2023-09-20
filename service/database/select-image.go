@@ -1,23 +1,19 @@
 package database
+import "database/sql"
 
-func (db *appdbimpl) SelectImage(photoId uint64) (Image, error) {
-	var ret Image
+func (db *appdbimpl) SelectImage(photoId uint64) ([]byte, error) {
+	var ret []byte
 
-	// Plain simple SELECT query
-	row, err := db.c.Query(`SELECT photo_id, image FROM photos WHERE photo_id=?`, photoId)
-	if err != nil {
-		return ret, err
-	}
-	defer func() { _ = row.Close() }()
+	row := db.c.QueryRow(`SELECT image FROM photos WHERE id=?`, photoId)
 
-	// Here we read the resultset and we build the list to be returned
-
-	err = row.Scan(&ret.ID, ret.Image)
-	if err != nil {
+	if err := row.Scan(&ret); err != nil {
+		if err == sql.ErrNoRows {
+			return ret, ErrPhotoDoesNotExist
+		}
 		return ret, err
 	}
 
-	if row.Err() != nil {
+	if err := row.Err(); err!= nil {
 		return ret, err
 	}
 
