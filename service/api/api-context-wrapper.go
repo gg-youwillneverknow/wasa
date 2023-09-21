@@ -1,13 +1,12 @@
 package api
 
 import (
-	"net/http"
-	"fmt"
-	"strconv"
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/gofrs/uuid"
 	"github.com/julienschmidt/httprouter"
 	"github.com/sirupsen/logrus"
+	"net/http"
+	"strconv"
 )
 
 // httpRouterHandler is the signature for functions that accepts a reqcontext.RequestContext in addition to those
@@ -21,18 +20,13 @@ func (rt *_router) wrap(fn httpRouterHandler) func(http.ResponseWriter, *http.Re
 
 		if endpoint != "/session" {
 			userId, err := strconv.ParseUint(r.Header.Get("token"), 10, 64)
-			fmt.Println(token)
-			fmt.Println(r.Header.Get("Authorization"))
-			fmt.Println(r.Header.Get("token"))
-			fmt.Println("trying")
+
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
-			fmt.Println(token)
-			fmt.Println(userId)
-			fmt.Println("wrapping")
-			if (userId!=token){
+
+			if userId != token {
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}

@@ -2,11 +2,10 @@ package api
 
 import (
 	"encoding/json"
-	"net/http"
-	"strconv"
-
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
+	"net/http"
+	"strconv"
 )
 
 func (rt *_router) getStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {

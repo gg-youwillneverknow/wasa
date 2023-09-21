@@ -2,17 +2,16 @@ package api
 
 import (
 	"errors"
-	"net/http"
-
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
 	"github.com/julienschmidt/httprouter"
+	"net/http"
 )
 
 func (rt *_router) deleteFollowing(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var username string
 	username = ps.ByName("username")
-	
+
 	var followingusername string
 	followingusername = ps.ByName("followingname")
 

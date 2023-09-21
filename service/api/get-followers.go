@@ -2,19 +2,19 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
-	"errors"
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
-	"github.com/julienschmidt/httprouter"
 )
 
 func (rt *_router) getFollowers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var page uint64
 	var limit uint64
-	var username string 
+	var username string
 	var followers []Follower
 	username = ps.ByName("username")
 	var err error
@@ -45,7 +45,7 @@ func (rt *_router) getFollowers(w http.ResponseWriter, r *http.Request, ps httpr
 	} else {
 		limit = 20
 	}
-	
+
 	dbfollowers, err := rt.db.SelectFollowers(username, page, limit)
 	if errors.Is(err, database.ErrUserDoesNotExist) {
 		ctx.Logger.WithError(err).Error("can't get followers")
@@ -57,7 +57,7 @@ func (rt *_router) getFollowers(w http.ResponseWriter, r *http.Request, ps httpr
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	
+
 	for _, dbfollower := range dbfollowers {
 		var follower Follower
 		follower.FromDatabase(dbfollower)

@@ -1,6 +1,7 @@
 package api
 
 import "git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
+
 // Fountain struct represent a fountain in every data exchange with the external world via REST API. JSON tags have been
 // added to the struct to conform to the OpenAPI specifications regarding JSON key names.
 // Note: there is a similar struct in the database package. See Fountain.FromDatabase (below) to understand why.
@@ -24,18 +25,18 @@ func (f *User) FromDatabase(fountain database.User) {
 }
 
 type Profile struct {
-	Username   string  `json:"username"`
-	Followers  uint32  `json:"followers"`
-	Followings uint32  `json:"followings"`
-	Posts      uint32  `json:"posts"`
+	Username   string `json:"username"`
+	Followers  uint32 `json:"followers"`
+	Followings uint32 `json:"followings"`
+	Posts      uint32 `json:"posts"`
 }
 
 type Photo struct {
-	ID          uint64    `json:"ID"`
-	Owner		string 	  `json:"owner"`
-	Datetime    string    `json:"dateTime"`
-	NumLikes    uint32    `json:"likesnum"`
-	NumComments uint32    `json:"commentsnum"`
+	ID          uint64 `json:"ID"`
+	Owner       string `json:"owner"`
+	Datetime    string `json:"dateTime"`
+	NumLikes    uint32 `json:"likesnum"`
+	NumComments uint32 `json:"commentsnum"`
 }
 
 func (f *Photo) ToDatabase(img []byte, user uint64, username string) database.Photo {
@@ -43,7 +44,7 @@ func (f *Photo) ToDatabase(img []byte, user uint64, username string) database.Ph
 		ID:          f.ID,
 		Datetime:    f.Datetime,
 		UserID:      user,
-		Owner: 		 username,
+		Owner:       username,
 		NumLikes:    0,
 		NumComments: 0,
 		Image:       img,

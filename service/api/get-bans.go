@@ -2,12 +2,12 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
-	"errors"
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
-	"github.com/julienschmidt/httprouter"
 )
 
 func (rt *_router) getBans(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -57,7 +57,7 @@ func (rt *_router) getBans(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	w.WriteHeader(http.StatusOK)
-	
+
 	// Send the list to the user.
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(bans)

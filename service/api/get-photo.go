@@ -2,12 +2,12 @@ package api
 
 import (
 	"encoding/json"
-	"net/http"
-	"strconv"
 	"errors"
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
 	"github.com/julienschmidt/httprouter"
+	"net/http"
+	"strconv"
 )
 
 func (rt *_router) getPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -22,9 +22,9 @@ func (rt *_router) getPhoto(w http.ResponseWriter, r *http.Request, ps httproute
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	
+
 	dbphoto, err := rt.db.SelectPhoto(photoId)
-	dbphoto.Owner=username
+	dbphoto.Owner = username
 	if errors.Is(err, database.ErrPhotoDoesNotExist) {
 		w.WriteHeader(http.StatusNotFound)
 		return

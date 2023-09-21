@@ -79,21 +79,6 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Photo" } 
-          links:
-            GetImageByPhotoId:  
-              operationId: getRawImage
-              parameters:
-                photoId: '$response.body#/ID'
-              description: >
-                The `ID` value returned in the response can be used as
-                the `photoId` parameter in `GET /images/{photoId}`.
-            GetPhotoByPhotoId:  
-              operationId: getPhoto
-              parameters:
-                photoId: '$response.body#/ID'
-              description: >
-                The `ID` value returned in the response can be used as
-                the `photoId` parameter in `GET /users/{username}/photos/{photoId}`.
         "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -405,14 +390,6 @@ paths:
           content:
             application/json: 
               schema: { $ref: "#/components/schemas/ID" }
-          links:
-            GetUserByUserId:  
-              operationId: setMyUserName
-              parameters:
-                userId: '$response.body#/ID'
-              description: >
-                The `ID` value returned in the response can be used as
-                the `userId` parameter in `PUT /accounts/{userId}/edit`.
 
 components:
   securitySchemes:
@@ -707,4 +684,4 @@ components:
       - Followings
       - Posts
 security:
-  - bearerAuth: []  
+  - bearerAuth: []   

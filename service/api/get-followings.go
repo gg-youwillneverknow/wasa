@@ -2,22 +2,22 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
-	"errors"
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
-	"github.com/julienschmidt/httprouter"
 )
 
 func (rt *_router) getFollowings(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var page uint64
 	var limit uint64
-	var username string 
+	var username string
 	username = ps.ByName("username")
 	var err error
-	
+
 	if r.URL.Query().Has("page") {
 		page, err = strconv.ParseUint(r.URL.Query().Get("page"), 10, 64)
 		if err != nil {
@@ -58,7 +58,7 @@ func (rt *_router) getFollowings(w http.ResponseWriter, r *http.Request, ps http
 	}
 
 	w.WriteHeader(http.StatusOK)
-	
+
 	// Send the list to the user.
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(followings)

@@ -2,16 +2,16 @@ package api
 
 import (
 	"encoding/json"
-	"net/http"
-	"strconv"
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
+	"net/http"
+	"strconv"
 )
 
 func (rt *_router) createComment(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	
+
 	var comment Comment
-	
+
 	photoId, err := strconv.ParseUint(ps.ByName("photoId"), 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -34,7 +34,6 @@ func (rt *_router) createComment(w http.ResponseWriter, r *http.Request, ps http
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
 
 	comment.FromDatabase(dbcomment)
 	w.WriteHeader(201)

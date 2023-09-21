@@ -1,13 +1,13 @@
 package api
 
 import (
-	"io/ioutil"
-	"net/http"
 	"encoding/json"
 	"errors"
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
 	"github.com/julienschmidt/httprouter"
+	"io"
+	"net/http"
 )
 
 func (rt *_router) createPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -16,12 +16,12 @@ func (rt *_router) createPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	var data []byte
 	var err error
 	username := ps.ByName("username")
-	
-	if err:= r.ParseMultipartForm(32 << 20); err!=nil{
+
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	
+
 	file, _, err := r.FormFile("photos")
 	if err != nil {
 		http.Error(w, "Failed to retrieve uploaded file", http.StatusBadRequest)
@@ -29,7 +29,7 @@ func (rt *_router) createPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 	defer file.Close()
 	// Read the file data
-	data, err = ioutil.ReadAll(file)
+	data, err = io.ReadAll(file)
 	if err != nil {
 		http.Error(w, "Failed to read file data", http.StatusInternalServerError)
 		return
@@ -41,13 +41,13 @@ func (rt *_router) createPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	if err!=nil {
+	if err != nil {
 		ctx.Logger.WithError(err).Error("can't get the user")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	dbphoto, err := rt.db.CreatePhoto(photo.ToDatabase(data,dbuserId,username))
+	dbphoto, err := rt.db.CreatePhoto(photo.ToDatabase(data, dbuserId, username))
 	if err != nil {
 		ctx.Logger.WithError(err).Error("can't create the photo")
 		w.WriteHeader(http.StatusInternalServerError)

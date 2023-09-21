@@ -3,15 +3,15 @@ package api
 import (
 	"encoding/json"
 	"errors"
-	"net/http"
-	"strconv"
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
 	"github.com/julienschmidt/httprouter"
+	"net/http"
+	"strconv"
 )
 
 func (rt *_router) updateAccount(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	
+
 	var updatedInfo User
 	var ret database.User
 
@@ -22,12 +22,11 @@ func (rt *_router) updateAccount(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-
 	err2 := json.NewDecoder(r.Body).Decode(&updatedInfo)
 	if err2 != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
-	} 
+	}
 	updatedInfo.ID = id
 	// Update the UserInfo in the database.
 	ret, err = rt.db.UpdateAccount(updatedInfo.ToDatabase())

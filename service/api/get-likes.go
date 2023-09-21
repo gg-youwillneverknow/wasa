@@ -2,11 +2,10 @@ package api
 
 import (
 	"encoding/json"
-	"net/http"
-	"strconv"
-
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
+	"net/http"
+	"strconv"
 )
 
 func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -19,7 +18,7 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	
+
 	if r.URL.Query().Has("page") {
 		page, err = strconv.ParseUint(r.URL.Query().Get("page"), 10, 64)
 		if err != nil {
@@ -61,7 +60,7 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 	}
 
 	w.WriteHeader(http.StatusOK)
-	
+
 	// Send the list to the user.
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(likes)
