@@ -61,19 +61,6 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Photos" } 
-          headers:
-            Pagination-Count: 
-              description: Total number of items
-              schema:
-                type: integer
-            Pagination-Page: 
-              description: Current page number
-              schema:
-                type: integer
-            Pagination-Limit: 
-              description: Number of returned items
-              schema:
-                type: integer
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
     post: 
@@ -96,16 +83,16 @@ paths:
             GetImageByPhotoId:  
               operationId: getRawImage
               parameters:
-                imageId: '$response.body#/PhotoId'
+                photoId: '$response.body#/ID'
               description: >
-                The `PhotoId` value returned in the response can be used as
+                The `ID` value returned in the response can be used as
                 the `photoId` parameter in `GET /images/{photoId}`.
             GetPhotoByPhotoId:  
               operationId: getPhoto
               parameters:
-                photoId: '$response.body#/PhotoId'
+                photoId: '$response.body#/ID'
               description: >
-                The `PhotoId` value returned in the response can be used as
+                The `ID` value returned in the response can be used as
                 the `photoId` parameter in `GET /users/{username}/photos/{photoId}`.
         "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFoundError" }
@@ -144,19 +131,6 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Photos" }
-          headers:
-            Pagination-Count: 
-              description: Total number of items
-              schema:
-                type: integer
-            Pagination-Page: 
-              description: Current page number
-              schema:
-                type: integer
-            Pagination-Limit: 
-              description: Number of returned items
-              schema:
-                type: integer
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
             
@@ -206,19 +180,6 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Comments" }
-          headers:
-            Pagination-Count: 
-              description: Total number of items
-              schema:
-                type: integer
-            Pagination-Page: 
-              description: Current page number
-              schema:
-                type: integer
-            Pagination-Limit: 
-              description: Number of returned items
-              schema:
-                type: integer
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }  
     post: 
@@ -273,19 +234,6 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Likes" }
-          headers:
-            Pagination-Count: 
-              description: Total number of items
-              schema:
-                type: integer
-            Pagination-Page: 
-              description: Current page number
-              schema:
-                type: integer
-            Pagination-Limit: 
-              description: Number of returned items
-              schema:
-                type: integer
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" } 
         
@@ -300,7 +248,11 @@ paths:
       description: The user specified by userId can put a like on a photo specified by photoId.
       tags: [likes]
       responses: 
-        "200": {description: Like put successfully. }
+        "200": 
+          description: Like put successfully. 
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Like" } 
         "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -331,19 +283,6 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Followers" }
-          headers:
-            Pagination-Count: 
-              description: Total number of items
-              schema:
-                type: integer
-            Pagination-Page: 
-              description: Current page number
-              schema:
-                type: integer
-            Pagination-Limit: 
-              description: Number of returned items
-              schema:
-                type: integer
         "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }  
@@ -364,19 +303,6 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Followings" }
-          headers:
-            Pagination-Count: 
-              description: Total number of items
-              schema:
-                type: integer
-            Pagination-Page: 
-              description: Current page number
-              schema:
-                type: integer
-            Pagination-Limit: 
-              description: Number of returned items
-              schema:
-                type: integer
         "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }  
@@ -391,7 +317,11 @@ paths:
       description: The user specified by username can follow a user specified by following name.
       tags: [followings]
       responses: 
-        "200": {description: User followed successfully.}
+        "200":
+          description: User followed successfully.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Following" } 
         "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -422,19 +352,6 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Bans" }
-          headers:
-            Pagination-Count: 
-              description: Total number of items
-              schema:
-                type: integer
-            Pagination-Page: 
-              description: Current page number
-              schema:
-                type: integer
-            Pagination-Limit: 
-              description: Number of returned items
-              schema:
-                type: integer
         "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" } 
@@ -469,7 +386,7 @@ paths:
           "500": { $ref: "#/components/responses/InternalServerError" }
   /session:
     post:
-      tags: ["login"]
+      tags: [login]
       summary: Logs in the user 
       description: |-
             If the user does not exist, it will be created,
@@ -492,9 +409,9 @@ paths:
             GetUserByUserId:  
               operationId: setMyUserName
               parameters:
-                userId: '$response.body#/identifier'
+                userId: '$response.body#/ID'
               description: >
-                The `id` value returned in the response can be used as
+                The `ID` value returned in the response can be used as
                 the `userId` parameter in `PUT /accounts/{userId}/edit`.
 
 components:
@@ -521,12 +438,6 @@ components:
       name: userId
       description: The identifier for a user
       schema: {$ref: '#/components/schemas/ID'}
-      required: true
-    followername: 
-      in: path
-      name: followername
-      description: The name of a follower
-      schema: {$ref: '#/components/schemas/Username'}
       required: true
     followingname: 
       in: path
@@ -584,7 +495,7 @@ components:
           schema: 
             $ref: '#/components/schemas/Error'
     NotFoundError:
-      description: There is an error in the server
+      description: The resource was not found
       content: 
         application/json:
           schema: 
@@ -594,8 +505,8 @@ components:
       description: The information that characterizes a user
       type: object 
       properties: 
-        username: { $ref: "#/components/schemas/Username" }
-        userId: { $ref: "#/components/schemas/ID" }
+        Username: { $ref: "#/components/schemas/Username" }
+        ID: { $ref: "#/components/schemas/ID" }
       required: 
       - Username 
       - ID
@@ -635,10 +546,10 @@ components:
       description: The error statement
       properties:
         statement:
-          description: The text from the server for exaplaing the error
+          description: The text from the server for explaining the error
           type: string
           example: Invalid username.
-          pattern: '^[a-zA-Z0-9.]{5,30}$'
+          pattern: '^[a-zA-Z0-9_.+\- ,!?"();.]{5,30}$'
           minLength: 5
           maxLength: 50
     Photos: 
@@ -735,7 +646,7 @@ components:
           type: string 
           description: The text of the comment chosen by user
           example: Beautiful!
-          pattern: '^[a-zA-Z0-9_.+-]{1,200}$'
+          pattern: '^[a-zA-Z0-9_.+\- ,!?"();.]{1,200}$'
           minLength: 1
           maxLength: 200
         Commenter: { $ref: "#/components/schemas/Username" }
@@ -754,7 +665,7 @@ components:
       type: object
       description: The user who put the like
       properties: 
-        Liker: { $ref: "#/components/schemas/Username" }    
+        Username: { $ref: "#/components/schemas/Username" }    
       required: 
       - Username
     Likes:
@@ -766,6 +677,7 @@ components:
       uniqueItems: true
     Profile:  
       type: object
+      description: The information related to a user that is visible to everyone.
       properties:
         Username: { $ref: "#/components/schemas/Username" }
         Followers:
@@ -795,4 +707,4 @@ components:
       - Followings
       - Posts
 security:
-  - bearerAuth: []   
+  - bearerAuth: []  
