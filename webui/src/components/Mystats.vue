@@ -40,7 +40,7 @@
 <script>
 export default {
     name: "Mystats",
-    props: ["username","numfollowers","numfollowings","numposts"],
+    props: ["username","numfollowers","numfollowings","numposts", "userId"],
     data () {
         return{
             followers: null, 
@@ -66,7 +66,7 @@ export default {
 			try {
 				
 				let response = await this.$axios.get(`/users/${this.username}/followings/`,{
-                headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+                headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
                 });
 				
 				if (response.status!=200){
@@ -86,7 +86,7 @@ export default {
 			this.errormsg = null;
 			try {
 				let response = await this.$axios.get(`/users/${this.username}/followers/`,{
-                headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+                headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
                 });
 
                 if (response.status!=200){

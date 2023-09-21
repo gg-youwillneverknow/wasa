@@ -10,7 +10,7 @@
 <script>
 export default {
   name: "Grid",
-  props: ["username","photos"],
+  props: ["username","photos","userId"],
   data() {
     return {
       errormsg: null,
@@ -30,8 +30,8 @@ export default {
         let response = await this.$axios.get(`images/${photoId}`, {
           responseType: "blob",
           headers: { Accept: "image/jpeg", 
-                    Authorization: "Bearer ${token}",
-                    token: localStorage.getItem("userId")
+                    Authorization: `Bearer ${this.userId}`,
+                    token: this.userId
                   },
         });
         if (response.status !== 200) {

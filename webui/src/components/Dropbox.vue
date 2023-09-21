@@ -63,8 +63,8 @@
 
       upload(formData) {
         const config = {headers: { 'content-type': 'multipart/form-data',
-                                  Authorization: "Bearer ${token}",
-                                  token: localStorage.getItem("userId") 
+                                  Authorization: `Bearer ${this.userId}`,
+                                  token: this.userId 
                                 }
                       }
         return this.$axios.post(this.path, formData, config)

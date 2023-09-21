@@ -3,10 +3,11 @@ import Navbar from '../components/Navbar.vue'
 import Grid from '../components/Grid.vue';
 export default {
 	async mounted() {
-		let userId = localStorage.getItem('userId')
-		if (!userId){
+		this.userId = localStorage.getItem('userId')
+		if (!this.userId){
 			this.$router.push({name: 'Login'})
 		}
+		await this.getPhotos();
 	},
 	components: {
 		Navbar,
@@ -16,7 +17,8 @@ export default {
 	data (){
 		return{
 			username: localStorage.getItem('username'),
-			photos: null
+			photos: null,
+			userId: null
 		}
 	},
 	methods: {
@@ -25,7 +27,7 @@ export default {
 			this.errormsg = null;
 			try {
 				let response = await this.$axios.get(`/users/${this.username}/stream`,{
-                headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+                headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
                 });
 				if (response.status !== 200) {
 				throw response.status;
@@ -38,11 +40,7 @@ export default {
 			}
 			this.loading = false;
    	 	}
-	},
-	created() {
-    	this.getPhotos();
-  	}
-
+	}
 }
 </script>
 
@@ -50,7 +48,7 @@ export default {
 	<div id="profile" class="container">
 		<p>Home</p>
 		<Navbar :username="username"></Navbar>
-		<Grid v-if="photos !== null" :username="username" :photos="photos"></Grid>
+		<Grid v-if="photos !== null" :username="username" :photos="photos" :userId="userId"></Grid>
 	</div>
 </template>
 <style scoped>

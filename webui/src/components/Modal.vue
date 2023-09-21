@@ -26,8 +26,8 @@ export default {
 		async changeUsername(){
 			const config = {headers: 
 					{ 	'content-type': 'application/json', 
-						Authorization: "Bearer ${token}", 
-						token: localStorage.getItem("userId") }
+						Authorization: `Bearer ${this.userId}`, 
+						token: this.userId }
 							}
 			this.errormsg = null;
 			try {

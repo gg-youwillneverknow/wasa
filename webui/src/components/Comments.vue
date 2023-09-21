@@ -1,7 +1,7 @@
 <script>
 export default {
 	name: "Comments",
-	props: ["username"],
+	props: ["username","userId"],
 	data (){
 		return{
 			errormsg: null,
@@ -18,7 +18,7 @@ export default {
 			this.errormsg = null;
 			try {
 				let response = await this.$axios.get(this.$route.path+`/comments`,{
-                headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+                headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
                 });
 				if (response.status!=200){
 					throw(response.status)
@@ -31,8 +31,8 @@ export default {
 		},
 		async postComment(){
 			const config = {headers: { 'content-type': 'application/json',
-									Authorization: "Bearer ${token}",
-									token: localStorage.getItem("userId") }
+									Authorization: `Bearer ${this.userId}`,
+									token: this.userId }
 							}
 			this.errormsg = null;
 			try {
@@ -55,7 +55,7 @@ export default {
 			this.errormsg = null;
 			try {
 				let response = await this.$axios.delete(this.$route.path+`/comments/${commentId}`,{
-                headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+                headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
                 });
 				if (response.status!=204){
 					throw(response.status)

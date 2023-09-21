@@ -24,7 +24,7 @@ import Comments from '../components/Comments.vue'
           this.errormsg = null;
           try {
               let response = await this.$axios.delete(this.$route.path,{
-        			headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
       			});
               if (response.status !== 204) {
                 throw response.status;
@@ -64,8 +64,10 @@ import Comments from '../components/Comments.vue'
           this.errormsg = null;
             try {
              
-                let response = await this.$axios.put(this.$route.path+`/likes/${this.userId}`,{
-        			  headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+                let response = await this.$axios.put(this.$route.path+`/likes/${this.userId}`,
+                null,
+                {
+        			  headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
       			    });
                 if (response.status != 200) {
                 throw response.status;
@@ -81,7 +83,7 @@ import Comments from '../components/Comments.vue'
           try {
 
             let response = await this.$axios.delete(this.$route.path+`/likes/${this.userId}`,{
-        			headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
       			});
             if (response.status!=204){
               throw(response.status)
@@ -97,7 +99,7 @@ import Comments from '../components/Comments.vue'
             this.errormsg = null;
             try {
                 let response = await this.$axios.get(this.$route.path,{
-                headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+                headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
                 });
                 if (response.status !== 200) {
                 throw response.status;
@@ -113,8 +115,8 @@ import Comments from '../components/Comments.vue'
             try {
                 let response = await this.$axios.get(`images/${photoId}`, {
                 responseType: "blob",
-                headers: { Accept: "image/jpeg", Authorization: "Bearer ${token}",
-                          token: localStorage.getItem("userId")}
+                headers: { Accept: "image/jpeg", Authorization: `Bearer ${this.userId}`,
+                          token: this.userId}
                 });
                 if (response.status !== 200) {
                 throw response.status;
@@ -220,8 +222,8 @@ import Comments from '../components/Comments.vue'
       </div>
     </div>
   </div>
-  <Likes @messageToParent="handleMessageFromLikes"></Likes>
-  <Comments @changesComments="handleMessageFromComments" :username = "username"></Comments>
+  <Likes @messageToParent="handleMessageFromLikes" :userId="userId"></Likes>
+  <Comments @changesComments="handleMessageFromComments" :username = "username" :userId="userId"></Comments>
 </template>
 
 <style>

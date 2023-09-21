@@ -1,18 +1,20 @@
 <script>
 export default {
 	name: "Likes",
+	props: ["userId"],
 	data (){
 		return{
 			errormsg: null,
 			likes: null,
 		}
 	},
+	
 	methods: {
 		async getLikes(){
 			this.errormsg = null;
 			try {
 				let response = await this.$axios.get(this.$route.path+`/likes`,{
-                headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+                headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
                 });
 				if (response.status!=200){
 					throw(response.status)
@@ -24,7 +26,8 @@ export default {
 			}
 		}
 	},
-	async mounted () {
+	async created () {
+		console.log("mounted")
 		await this.getLikes()
 		if (this.likes!=null){
             this.$emit("messageToParent",this.likes);

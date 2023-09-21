@@ -77,7 +77,7 @@ export default {
 			try {
 				
 				let response = await this.$axios.get(this.$route.path,{
-        			headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
       			});
 				let profile  = response.data;
 
@@ -99,7 +99,7 @@ export default {
 			this.errormsg = null;
 			try {
 				let response = await this.$axios.get(`users/${this.searchUsername}/photos/`,{
-        			headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
       			});
 				if (response.status !== 200) {
 				throw response.status;
@@ -116,7 +116,7 @@ export default {
 			try {
 				
 				let response = await this.$axios.get(`/users/${this.searchUsername}/bans/`,{
-        			headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
       			});
 				
 				if (response.status!=200){
@@ -144,7 +144,7 @@ export default {
 			try {
 				
 				let response = await this.$axios.get(`/users/${this.username}/bans/`,{
-        			headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
       			});
 				
 				if (response.status!=200){
@@ -182,8 +182,10 @@ export default {
 			this.loading = true;
 			this.errormsg = null;
 			try {
-				let response = await this.$axios.put(`/users/${this.username}/followings/${this.searchUsername}`,{
-        			headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+				let response = await this.$axios.put(`/users/${this.username}/followings/${this.searchUsername}`,
+				null,
+				{
+        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
       			});
 				if (response.status!=200){
 					throw(response.status)
@@ -203,7 +205,7 @@ export default {
 			try {
 				
 				let response = await this.$axios.delete(`/users/${this.username}/followings/${this.searchUsername}`,{
-        			headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
       			});
 				
 				if (response.status!=204){
@@ -236,8 +238,10 @@ export default {
 			this.errormsg = null;
 			try {
 				
-				let response = await this.$axios.put(`/users/${this.username}/bans/${this.searchUsername}`,{
-        			headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+				let response = await this.$axios.put(`/users/${this.username}/bans/${this.searchUsername}`,
+				null,
+				{
+        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
       			});
 				
 				if (response.status!=200){
@@ -259,7 +263,7 @@ export default {
 			try {
 				
 				let response = await this.$axios.delete(`/users/${this.username}/bans/${this.searchUsername}`,{
-        			headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
       			});
 				
 				if (response.status!=204){
@@ -298,8 +302,8 @@ export default {
 <template>
 	<div id="profile" class="container">
 		<Navbar :username="username"></Navbar>
-		<Mystats v-if="!isbanned && errormsg===null" :username="searchUsername" :numfollowers="numfollowers" :numfollowings="numfollowings" :numposts="numposts" @messageToParent=handleMessageFromChild></Mystats>
-		<Grid v-if="photos !== null && !isbanned && errormsg===null" :username="searchUsername" :photos="photos"></Grid>
+		<Mystats v-if="!isbanned && errormsg===null" :username="searchUsername" :numfollowers="numfollowers" :numfollowings="numfollowings" :numposts="numposts" :userId="userId" @messageToParent=handleMessageFromChild></Mystats>
+		<Grid v-if="photos !== null && !isbanned && errormsg===null" :username="searchUsername" :userId="userId" :photos="photos"></Grid>
 		<ErrorMsg id="errorProf" v-if="errormsg" :msg="errormsg"></ErrorMsg>
 		<button v-if="searchUsername!==username && !isbanned && errormsg===null" id="followbut" class="btn btn-primary" @click="handlebtn">{{isfollowing ? "unfollow" : "follow"}} </button>
 		<button v-if="searchUsername!==username && !isbanned && errormsg===null" id="banbut" class="btn btn-primary" @click="handlebtn2">{{searchbanned ? "remove ban" : "ban"}} </button>
