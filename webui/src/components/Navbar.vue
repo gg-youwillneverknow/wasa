@@ -4,9 +4,11 @@ export default {
 	data: function(){
 		return{
 			login: false,
-			profilePath: "/users/"+this.username+"/profile",
 			searchUsername: null,
 		}
+	},
+	computed: {
+		profilePath(){ return "/users/"+this.username+"/profile"}
 	},
 	methods: {
 		logout() {
@@ -18,6 +20,7 @@ export default {
 			this.errormsg = null;
 			this.$router.push(`/users/${this.searchUsername}/profile`)			
 		},
+		
 	},
 	props: ['username']
 }

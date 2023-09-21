@@ -36,6 +36,7 @@ export default {
 	watch: {
 		async '$route.params.username'(newUsername) {
 			this.username=localStorage.getItem('username')
+
 			this.isbanned=false
 			if(newUsername){
 			this.searchUsername=newUsername		
@@ -63,7 +64,7 @@ export default {
 			await this.getProfile();
 			await this.getPhotos();
 		},
-		handleMessageFromChild(followers) {
+		handleMessageFromMystats(followers) {
       		for (const item of followers){
 				if(this.username===item.Username){
 
@@ -302,7 +303,7 @@ export default {
 <template>
 	<div id="profile" class="container">
 		<Navbar :username="username"></Navbar>
-		<Mystats v-if="!isbanned && errormsg===null" :username="searchUsername" :numfollowers="numfollowers" :numfollowings="numfollowings" :numposts="numposts" :userId="userId" @messageToParent=handleMessageFromChild></Mystats>
+		<Mystats v-if="!isbanned && errormsg===null" :username="searchUsername" :numfollowers="numfollowers" :numfollowings="numfollowings" :numposts="numposts" :userId="userId" @messageToParent=handleMessageFromMystats></Mystats>
 		<Grid v-if="photos !== null && !isbanned && errormsg===null" :username="searchUsername" :userId="userId" :photos="photos"></Grid>
 		<ErrorMsg id="errorProf" v-if="errormsg" :msg="errormsg"></ErrorMsg>
 		<button v-if="searchUsername!==username && !isbanned && errormsg===null" id="followbut" class="btn btn-primary" @click="handlebtn">{{isfollowing ? "unfollow" : "follow"}} </button>
