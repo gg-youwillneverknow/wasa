@@ -11,7 +11,9 @@ export default {
 		async getLikes(){
 			this.errormsg = null;
 			try {
-				let response = await this.$axios.get(this.$route.path+`/likes`);
+				let response = await this.$axios.get(this.$route.path+`/likes`,{
+                headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+                });
 				if (response.status!=200){
 					throw(response.status)
 				}

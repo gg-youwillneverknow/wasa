@@ -24,7 +24,9 @@ export default {
 			this.loading = true;
 			this.errormsg = null;
 			try {
-				let response = await this.$axios.get(`/users/${this.username}/stream`);
+				let response = await this.$axios.get(`/users/${this.username}/stream`,{
+                headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+                });
 				if (response.status !== 200) {
 				throw response.status;
 				}

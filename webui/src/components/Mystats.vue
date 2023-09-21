@@ -65,7 +65,9 @@ export default {
 			this.errormsg = null;
 			try {
 				
-				let response = await this.$axios.get(`/users/${this.username}/followings/`);
+				let response = await this.$axios.get(`/users/${this.username}/followings/`,{
+                headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+                });
 				
 				if (response.status!=200){
 					throw(response.status)
@@ -83,7 +85,9 @@ export default {
             this.loading = true;
 			this.errormsg = null;
 			try {
-				let response = await this.$axios.get(`/users/${this.username}/followers/`);
+				let response = await this.$axios.get(`/users/${this.username}/followers/`,{
+                headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+                });
 
                 if (response.status!=200){
 					throw(response.status)

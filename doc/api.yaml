@@ -421,7 +421,7 @@ paths:
           description: Successful operation.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/banned_list" }
+              schema: { $ref: "#/components/schemas/Bans" }
           headers:
             Pagination-Count: 
               description: Total number of items
@@ -453,7 +453,7 @@ paths:
           description: User banned successfully.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/banned" }
+              schema: { $ref: "#/components/schemas/Ban" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "404": { $ref: "#/components/responses/NotFoundError" }
         "500": { $ref: "#/components/responses/InternalServerError" } 
@@ -480,14 +480,14 @@ paths:
         description: User details
         content:
           application/json: 
-            schema: { $ref: "#/components/schemas/username" }
+            schema: { $ref: "#/components/schemas/Username" }
         required: true
       responses:
         '201':
           description: User log-in action successful 
           content:
             application/json: 
-              schema: { $ref: "#/components/schemas/userId" }
+              schema: { $ref: "#/components/schemas/ID" }
           links:
             GetUserByUserId:  
               operationId: setMyUserName
@@ -508,7 +508,7 @@ components:
       in: path
       name: commentId
       description: The comment identifier
-      schema: { $ref: "#/components/schemas/commentId" }
+      schema: { $ref: "#/components/schemas/CommentId" }
       required: true
     username: 
       in: path
@@ -526,25 +526,25 @@ components:
       in: path
       name: followername
       description: The name of a follower
-      schema: {$ref: '#/components/schemas/username'}
+      schema: {$ref: '#/components/schemas/Username'}
       required: true
     followingname: 
       in: path
       name: followingname
       description: The name of a following
-      schema: {$ref: '#/components/schemas/username'}
+      schema: {$ref: '#/components/schemas/Username'}
       required: true
     bannedname: 
       in: path
       name: bannedname
       description: The name of a banned user
-      schema: {$ref: '#/components/schemas/username'}
+      schema: {$ref: '#/components/schemas/Username'}
       required: true
     photoId:
       in: path
       name: photoId
       description: The identifier of a phot
-      schema: {$ref: '#/components/schemas/photoId'}
+      schema: {$ref: '#/components/schemas/PhotoId'}
       required: true
     page:
       name: page
@@ -795,4 +795,4 @@ components:
       - Followings
       - Posts
 security:
-  - bearerAuth: []       
+  - bearerAuth: []   

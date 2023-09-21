@@ -23,7 +23,9 @@ import Comments from '../components/Comments.vue'
         async deletePhoto(){
           this.errormsg = null;
           try {
-              let response = await this.$axios.delete(this.$route.path);
+              let response = await this.$axios.delete(this.$route.path,{
+        			headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+      			});
               if (response.status !== 204) {
                 throw response.status;
               }  
@@ -62,7 +64,9 @@ import Comments from '../components/Comments.vue'
           this.errormsg = null;
             try {
              
-                let response = await this.$axios.put(this.$route.path+`/likes/${this.userId}`);
+                let response = await this.$axios.put(this.$route.path+`/likes/${this.userId}`,{
+        			  headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+      			    });
                 if (response.status != 200) {
                 throw response.status;
                 }
@@ -76,7 +80,9 @@ import Comments from '../components/Comments.vue'
           this.errormsg = null;
           try {
 
-            let response = await this.$axios.delete(this.$route.path+`/likes/${this.userId}`);
+            let response = await this.$axios.delete(this.$route.path+`/likes/${this.userId}`,{
+        			headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+      			});
             if (response.status!=204){
               throw(response.status)
             }
@@ -90,7 +96,9 @@ import Comments from '../components/Comments.vue'
 
             this.errormsg = null;
             try {
-                let response = await this.$axios.get(this.$route.path);
+                let response = await this.$axios.get(this.$route.path,{
+                headers: {Authorization: "Bearer ${token}",token: localStorage.getItem("userId")}
+                });
                 if (response.status !== 200) {
                 throw response.status;
                 }
@@ -105,7 +113,8 @@ import Comments from '../components/Comments.vue'
             try {
                 let response = await this.$axios.get(`images/${photoId}`, {
                 responseType: "blob",
-                headers: { Accept: "image/jpeg" },
+                headers: { Accept: "image/jpeg", Authorization: "Bearer ${token}",
+                          token: localStorage.getItem("userId")}
                 });
                 if (response.status !== 200) {
                 throw response.status;
@@ -134,8 +143,9 @@ import Comments from '../components/Comments.vue'
             const day = date.getDate(); 
             const month = date.toLocaleString('default', { month: 'long' });
             const year = date.getFullYear();
-
-            this.formattedDate = `${day} ${month} ${year}`
+            const minutes = date.getMinutes();
+            const hours = date.getHours();
+            this.formattedDate = `${hours}:${minutes} ${day} ${month} ${year}`
 
             this.owner = newValue.owner
           },

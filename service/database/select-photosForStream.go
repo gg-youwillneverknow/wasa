@@ -7,14 +7,16 @@ func (db *appdbimpl) SelectPhotosForStream(username string, page uint64, limit u
 	FROM photos INNER JOIN users ON photos.user_id=users.id 
 	WHERE photos.user_id IN 
 	(SELECT followers.user_id FROM followers INNER JOIN users ON followers.follower_id=users.id 
-		WHERE users.username=?)  
+		WHERE users.username=?) AND photos.user_id NOT IN 
+	(SELECT bans.user_id FROM bans INNER JOIN users ON bans.banned_id=users.id 
+		WHERE users.username=?)
 	ORDER BY photos.datetime DESC
 	LIMIT ?
 	OFFSET ?`
 	var ret []Photo
 
 	// Issue the query, using the bounding box as filter
-	rows, err := db.c.Query(query, username, limit, offset)
+	rows, err := db.c.Query(query, username, username, limit, offset)
 	if err != nil {
 		return nil, err
 	}

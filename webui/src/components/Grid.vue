@@ -29,7 +29,10 @@ export default {
       try {
         let response = await this.$axios.get(`images/${photoId}`, {
           responseType: "blob",
-          headers: { Accept: "image/jpeg" },
+          headers: { Accept: "image/jpeg", 
+                    Authorization: "Bearer ${token}",
+                    token: localStorage.getItem("userId")
+                  },
         });
         if (response.status !== 200) {
           throw response.status;

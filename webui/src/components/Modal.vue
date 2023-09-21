@@ -24,10 +24,15 @@ export default {
 	},
 	methods: {
 		async changeUsername(){
-			const config = {headers: { 'content-type': 'application/json' }}
+			const config = {headers: 
+					{ 	'content-type': 'application/json', 
+						Authorization: "Bearer ${token}", 
+						token: localStorage.getItem("userId") }
+							}
 			this.errormsg = null;
 			try {
-				let response = await this.$axios.put(this.path,JSON.stringify({Username: this.newUsername, ID: this.userId}),config);
+				let response = await this.$axios.put(this.path,
+				JSON.stringify({Username: this.newUsername, ID: this.userId}),config);
 				if (response.status!=200){
 					throw(response.status)
 				}else{
@@ -44,7 +49,6 @@ export default {
 		handleSubmit() {
 			// validate username
 			this.errormsg = this.newUsername.length > 4 ? '' : 'Username must have at least 5 chars'
-			console.log(this.errormsg)
 			if (this.errormsg!=''){
 				
 				return}
@@ -86,10 +90,10 @@ export default {
         <input v-model="newUsername" type="text" id="username" name="username" class="form-control" placeholder="insert new username">
       </div>
       <div class="modal-footer">
-        <button v-if="errormsg === null" @click="handleSubmit" type="button" class="btn btn-primary">Save changes</button>
-        <button v-if="errormsg === null" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-		<ErrorMsg id="error" v-if="errormsg !== null" :msg="errormsg"></ErrorMsg>
-	  </div>
+        <button v-if="!errormsg" @click="handleSubmit" type="button" class="btn btn-primary">Save changes</button>
+        <button v-if="!errormsg" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+		<ErrorMsg id="error" v-if="errormsg" :msg="errormsg"></ErrorMsg>
+	</div>
     </div>
   </div>
 </div>

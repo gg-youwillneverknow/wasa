@@ -16,7 +16,6 @@ export default {
 		async getProfile() {
 			this.loading = true;
 			this.errormsg = null;
-			
 			this.$router.push(`/users/${this.searchUsername}/profile`)			
 		},
 	},
