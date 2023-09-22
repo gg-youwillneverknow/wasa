@@ -5,9 +5,9 @@ info:
 servers: 
   - url: http://localhost:3000
 paths: 
-  /accounts/{userId}/edit:
+  /accounts/{username}/edit:
     parameters:
-    - { $ref: "#/components/parameters/userId" }
+    - { $ref: "#/components/parameters/username" }
     put:
       operationId: setMyUserName
       summary: Updates user account by providing a new username.
@@ -16,7 +16,7 @@ paths:
       requestBody: 
         content: 
           application/json:       
-            schema: {$ref: '#/components/schemas/Username'}
+            schema: {$ref: '#/components/schemas/User'}
         required: true
       responses:
         '200':

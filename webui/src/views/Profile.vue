@@ -78,7 +78,7 @@ export default {
 			try {
 				
 				let response = await this.$axios.get(this.$route.path,{
-        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
+        			headers: {Authorization: `Bearer ${this.userId}`}
       			});
 				let profile  = response.data;
 
@@ -100,7 +100,7 @@ export default {
 			this.errormsg = null;
 			try {
 				let response = await this.$axios.get(`users/${this.searchUsername}/photos/`,{
-        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
+        			headers: {Authorization: `Bearer ${this.userId}`}
       			});
 				if (response.status !== 200) {
 				throw response.status;
@@ -117,7 +117,7 @@ export default {
 			try {
 				
 				let response = await this.$axios.get(`/users/${this.searchUsername}/bans/`,{
-        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
+        			headers: {Authorization: `Bearer ${this.userId}`}
       			});
 				
 				if (response.status!=200){
@@ -145,7 +145,7 @@ export default {
 			try {
 				
 				let response = await this.$axios.get(`/users/${this.username}/bans/`,{
-        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
+        			headers: {Authorization: `Bearer ${this.userId}`}
       			});
 				
 				if (response.status!=200){
@@ -186,7 +186,7 @@ export default {
 				let response = await this.$axios.put(`/users/${this.username}/followings/${this.searchUsername}`,
 				null,
 				{
-        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
+        			headers: {Authorization: `Bearer ${this.userId}`}
       			});
 				if (response.status!=200){
 					throw(response.status)
@@ -206,7 +206,7 @@ export default {
 			try {
 				
 				let response = await this.$axios.delete(`/users/${this.username}/followings/${this.searchUsername}`,{
-        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
+        			headers: {Authorization: `Bearer ${this.userId}`}
       			});
 				
 				if (response.status!=204){
@@ -242,7 +242,7 @@ export default {
 				let response = await this.$axios.put(`/users/${this.username}/bans/${this.searchUsername}`,
 				null,
 				{
-        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
+        			headers: {Authorization: `Bearer ${this.userId}`}
       			});
 				
 				if (response.status!=200){
@@ -264,7 +264,7 @@ export default {
 			try {
 				
 				let response = await this.$axios.delete(`/users/${this.username}/bans/${this.searchUsername}`,{
-        			headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
+        			headers: {Authorization: `Bearer ${this.userId}`}
       			});
 				
 				if (response.status!=204){

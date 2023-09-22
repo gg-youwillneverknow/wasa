@@ -13,11 +13,7 @@ func (db *appdbimpl) CreatePhoto(photo Photo) (Photo, error) {
 	photo.ID = uint64(lastInsertID)
 
 	row := db.c.QueryRow(`SELECT datetime FROM photos WHERE id=?`, photo.ID)
-	if err != nil {
-		return photo, err
-	}
-
-	if err := row.Scan(&photo.Datetime); err != nil {
+	if err = row.Scan(&photo.Datetime); err != nil {
 		return photo, err
 	}
 

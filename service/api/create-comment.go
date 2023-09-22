@@ -18,9 +18,9 @@ func (rt *_router) createComment(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	err2 := json.NewDecoder(r.Body).Decode(&comment)
+	err = json.NewDecoder(r.Body).Decode(&comment)
 
-	if err2 != nil {
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	} else if !comment.IsValid() {

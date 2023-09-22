@@ -30,8 +30,7 @@ export default {
         let response = await this.$axios.get(`images/${photoId}`, {
           responseType: "blob",
           headers: { Accept: "image/jpeg", 
-                    Authorization: `Bearer ${this.userId}`,
-                    token: this.userId
+                    Authorization: `Bearer ${this.userId}`
                   },
         });
         if (response.status !== 200) {

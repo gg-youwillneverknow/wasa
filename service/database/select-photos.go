@@ -5,7 +5,7 @@ func (db *appdbimpl) SelectPhotos(username string, page uint64, limit uint64) ([
 	var ret []Photo
 
 	const query = `
-	SELECT photos.id, photos.datetime, photos.user_id, photos.comments_num, photos.likes_num FROM photos INNER JOIN users ON photos.user_id=users.id WHERE users.username=?
+	SELECT photos.id, photos.datetime, photos.comments_num, photos.likes_num FROM photos INNER JOIN users ON photos.user_id=users.id WHERE users.username=?
 	ORDER BY photos.datetime DESC
 	LIMIT ?
 	OFFSET ?`
@@ -18,7 +18,7 @@ func (db *appdbimpl) SelectPhotos(username string, page uint64, limit uint64) ([
 
 	for rows.Next() {
 		var p Photo
-		err = rows.Scan(&p.ID, &p.Datetime, &p.UserID, &p.NumComments, &p.NumLikes)
+		err = rows.Scan(&p.ID, &p.Datetime, &p.NumComments, &p.NumLikes)
 		if err != nil {
 			return nil, err
 		}

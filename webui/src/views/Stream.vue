@@ -27,7 +27,7 @@ export default {
 			this.errormsg = null;
 			try {
 				let response = await this.$axios.get(`/users/${this.username}/stream`,{
-                headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
+                headers: {Authorization: `Bearer ${this.userId}`}
                 });
 				if (response.status !== 200) {
 				throw response.status;

@@ -10,7 +10,7 @@ export default {
 		return{
 			errormsg: null,
 			newUsername: null,
-			path: "/accounts/"+this.userId+"/edit",
+			path: "/accounts/"+this.username+"/edit",
 			profilePath: "/users/"+this.username+"/profile",
 		}
 	},
@@ -26,8 +26,8 @@ export default {
 		async changeUsername(){
 			const config = {headers: 
 					{ 	'content-type': 'application/json', 
-						Authorization: `Bearer ${this.userId}`, 
-						token: this.userId }
+						Authorization: `Bearer ${this.userId}`
+					}
 							}
 			this.errormsg = null;
 			try {
@@ -36,7 +36,6 @@ export default {
 				if (response.status!=200){
 					throw(response.status)
 				}else{
-
 					localStorage.setItem("username",this.newUsername)
 					this.profilePath="/users/"+this.newUsername+"/profile"
 					this.$router.push({path: this.profilePath})

@@ -66,7 +66,7 @@ export default {
 			try {
 				
 				let response = await this.$axios.get(`/users/${this.username}/followings/`,{
-                headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
+                headers: {Authorization: `Bearer ${this.userId}`}
                 });
 				
 				if (response.status!=200){
@@ -86,7 +86,7 @@ export default {
 			this.errormsg = null;
 			try {
 				let response = await this.$axios.get(`/users/${this.username}/followers/`,{
-                headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
+                headers: {Authorization: `Bearer ${this.userId}`}
                 });
 
                 if (response.status!=200){

@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 // httpRouterHandler is the signature for functions that accepts a reqcontext.RequestContext in addition to those
@@ -19,15 +20,31 @@ func (rt *_router) wrap(fn httpRouterHandler) func(http.ResponseWriter, *http.Re
 		endpoint := r.URL.Path
 
 		if endpoint != "/session" {
-			userId, err := strconv.ParseUint(r.Header.Get("token"), 10, 64)
+			authHeader := r.Header.Get("Authorization")
 
+			if authHeader == "" {
+				w.WriteHeader(http.StatusUnauthorized)
+				ctx.Logger.WithError("Unauthorized: Missing Authorization header")
+				return
+			}
+		
+			if !strings.HasPrefix(authHeader, "Bearer ") {
+				w.WriteHeader(http.StatusUnauthorized)
+				ctx.Logger.WithError("Unauthorized: Invalid Authorization method")
+				return
+			}
+		
+			userId, err := strconv.ParseUint(strings.TrimPrefix(authHeader, "Bearer "), 10, 64)
+			
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
+				ctx.Logger.WithError("Unauthorized: Invalid Authorization token")
 				return
 			}
 
 			if userId != token {
 				w.WriteHeader(http.StatusUnauthorized)
+				ctx.Logger.WithError("Unauthorized: User is not logged in")
 				return
 			}
 		}

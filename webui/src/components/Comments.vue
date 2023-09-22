@@ -17,8 +17,8 @@ export default {
 		async getComments(){
 			this.errormsg = null;
 			try {
-				let response = await this.$axios.get(this.$route.path+`/comments`,{
-                headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
+				let response = await this.$axios.get(this.$route.path+`/comments/`,{
+                headers: {Authorization: `Bearer ${this.userId}`}
                 });
 				if (response.status!=200){
 					throw(response.status)
@@ -31,13 +31,13 @@ export default {
 		},
 		async postComment(){
 			const config = {headers: { 'content-type': 'application/json',
-									Authorization: `Bearer ${this.userId}`,
-									token: this.userId }
+									Authorization: `Bearer ${this.userId}`
+									}
 							}
 			this.errormsg = null;
 			try {
 
-				let response = await this.$axios.post(this.$route.path+`/comments`,
+				let response = await this.$axios.post(this.$route.path+`/comments/`,
 				JSON.stringify(this.formData),config);
 				
 				if (response.status!=201){
@@ -55,7 +55,7 @@ export default {
 			this.errormsg = null;
 			try {
 				let response = await this.$axios.delete(this.$route.path+`/comments/${commentId}`,{
-                headers: {Authorization: `Bearer ${this.userId}`,token: this.userId}
+                headers: {Authorization: `Bearer ${this.userId}`}
                 });
 				if (response.status!=204){
 					throw(response.status)
