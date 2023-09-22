@@ -7,7 +7,10 @@ export default {
 		if (!this.userId){
 			this.$router.push({name: 'Login'})
 		}
-		await this.getPhotos();
+		else{
+			await this.getPhotos();
+		}
+		
 	},
 	components: {
 		Navbar,
