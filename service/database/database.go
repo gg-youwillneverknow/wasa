@@ -57,7 +57,7 @@ type Photo struct {
 	ID          uint64
 	Datetime    string
 	UserID      uint64
-	Owner 		string
+	Owner       string
 	NumLikes    uint32
 	NumComments uint32
 	Image       []byte
@@ -98,7 +98,7 @@ type AppDatabase interface {
 	SelectProfile(username string) (uint32, uint32, uint32, error)
 
 	SelectPhotos(username string, page uint64, limit uint64) ([]Photo, error)
-	
+
 	SelectPhoto(photoId uint64) (Photo, error)
 
 	CreatePhoto(photo Photo) (Photo, error)
@@ -153,7 +153,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 		return nil, errors.New("database is required when building a AppDatabase")
 	}
 	var err error
-	_,_=db.Exec("PRAGMA foreign_keys = ON;")
+	_, _ = db.Exec("PRAGMA foreign_keys = ON;")
 	// Check if table exists. If not, the database is empty, and we need to create the structure
 	var tableName string
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='users';`).Scan(&tableName)
@@ -270,7 +270,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 		_, err = db.Exec(sqlStmt3)
 		if err != nil {
-		return nil, fmt.Errorf("error creating database structure photos trigger4: %w", err)
+			return nil, fmt.Errorf("error creating database structure photos trigger4: %w", err)
 		}
 
 	}
@@ -306,9 +306,9 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 		_, err = db.Exec(sqlStmt3)
 		if err != nil {
-		return nil, fmt.Errorf("error creating database structure users trigger4: %w", err)
+			return nil, fmt.Errorf("error creating database structure users trigger4: %w", err)
 		}
-		
+
 		sqlStmt4 := `CREATE TRIGGER increase_followings AFTER INSERT ON followers FOR EACH ROW 
 					BEGIN 
 						UPDATE users SET followings_num = followings_num + 1 WHERE id=NEW.follower_id;
@@ -326,7 +326,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 		_, err = db.Exec(sqlStmt5)
 		if err != nil {
-		return nil, fmt.Errorf("error creating database structure users trigger6: %w", err)
+			return nil, fmt.Errorf("error creating database structure users trigger6: %w", err)
 		}
 
 	}

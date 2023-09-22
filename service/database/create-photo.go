@@ -2,7 +2,7 @@ package database
 
 func (db *appdbimpl) CreatePhoto(photo Photo) (Photo, error) {
 	res, err := db.c.Exec(`INSERT INTO photos (datetime, user_id, likes_num, comments_num, image) VALUES (datetime("now"), ?, 0, 0,?)`,
-	 photo.UserID, photo.Image)
+		photo.UserID, photo.Image)
 	if err != nil {
 		return photo, err
 	}

@@ -7,7 +7,6 @@ import (
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
-	"strconv"
 )
 
 func (rt *_router) updateAccount(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -27,7 +26,7 @@ func (rt *_router) updateAccount(w http.ResponseWriter, r *http.Request, ps http
 		w.WriteHeader(http.StatusNotFound)
 		return
 	} else if err != nil {
-		ctx.Logger.WithError(err).WithField("id", id).Error("can't update the username")
+		ctx.Logger.WithError(err).WithField("id", updatedInfo.ID).Error("can't update the username")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

@@ -1,7 +1,7 @@
 package database
 
 func (db *appdbimpl) SelectLikes(photoId uint64, page uint64, limit uint64) ([]Like, error) {
-	var offset = (page -1)*limit
+	var offset = (page - 1) * limit
 	var ret []Like
 
 	const query = `

@@ -1,4 +1,5 @@
 package database
+
 import "database/sql"
 
 func (db *appdbimpl) SelectProfile(username string) (uint32, uint32, uint32, error) {
@@ -10,12 +11,12 @@ func (db *appdbimpl) SelectProfile(username string) (uint32, uint32, uint32, err
 
 	if err := rows.Scan(&followers, &followings, &posts); err != nil {
 		if err == sql.ErrNoRows {
-			return 0,0,0, ErrUserDoesNotExist
+			return 0, 0, 0, ErrUserDoesNotExist
 		}
 		return 0, 0, 0, err
 	}
 
-	if err := rows.Err(); err!= nil {
+	if err := rows.Err(); err != nil {
 		return 0, 0, 0, err
 	}
 

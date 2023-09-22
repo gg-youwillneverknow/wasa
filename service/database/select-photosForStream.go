@@ -1,7 +1,7 @@
 package database
 
 func (db *appdbimpl) SelectPhotosForStream(username string, page uint64, limit uint64) ([]Photo, error) {
-	var offset = (page -1)*limit
+	var offset = (page - 1) * limit
 	const query = `
 	SELECT photos.id, photos.datetime, photos.comments_num, photos.likes_num, users.username 
 	FROM photos INNER JOIN users ON photos.user_id=users.id 

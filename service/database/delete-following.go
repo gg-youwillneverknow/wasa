@@ -1,4 +1,5 @@
 package database
+
 import "database/sql"
 
 func (db *appdbimpl) DeleteFollowing(username string, followingusername string) error {
@@ -12,7 +13,7 @@ func (db *appdbimpl) DeleteFollowing(username string, followingusername string) 
 		}
 		return err
 	}
-	if err := row.Err(); err!= nil {
+	if err := row.Err(); err != nil {
 		return err
 	}
 
@@ -24,7 +25,7 @@ func (db *appdbimpl) DeleteFollowing(username string, followingusername string) 
 		return err2
 	}
 
-	if err2 := row2.Err(); err2!= nil {
+	if err2 := row2.Err(); err2 != nil {
 		return err2
 	}
 

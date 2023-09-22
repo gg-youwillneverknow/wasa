@@ -1,6 +1,6 @@
 <template>
     <div class="gallery">
-      <div class="gallery-panel" v-for="(photo, index) in photos" :key="photo.ID">
+      <div class="gallery-panel" v-for="photo in photos" :key="photo.ID">
         <router-link :to="`/users/${photo.owner}/photos/${photo.ID}`">
           <img :src="resolvedImageUrls[photo.ID]" >
         </router-link>  

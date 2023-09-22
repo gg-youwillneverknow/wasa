@@ -1,5 +1,7 @@
 package database
+
 import "database/sql"
+
 func (db *appdbimpl) CreateComment(photoId uint64, comment Comment) (Comment, error) {
 	var id uint64
 	row := db.c.QueryRow(`SELECT id FROM users WHERE username=?`, comment.Commenter)
@@ -11,12 +13,12 @@ func (db *appdbimpl) CreateComment(photoId uint64, comment Comment) (Comment, er
 		return comment, err
 	}
 
-	if err := row.Err(); err!= nil {
+	if err := row.Err(); err != nil {
 		return comment, err
 	}
-	
+
 	res, err := db.c.Exec(`INSERT INTO comments (id, photo_id, comment, commenter_id) VALUES (NULL, ?, ?, ?)`,
-	photoId, comment.Text, id)
+		photoId, comment.Text, id)
 	if err != nil {
 		return comment, err
 	}

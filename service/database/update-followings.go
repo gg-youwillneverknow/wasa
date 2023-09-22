@@ -1,4 +1,5 @@
 package database
+
 import "database/sql"
 
 func (db *appdbimpl) UpdateFollowings(username string, followingusername string) error {
@@ -12,7 +13,7 @@ func (db *appdbimpl) UpdateFollowings(username string, followingusername string)
 		}
 		return err
 	}
-	if err := row.Err(); err!= nil {
+	if err := row.Err(); err != nil {
 		return err
 	}
 
@@ -23,7 +24,7 @@ func (db *appdbimpl) UpdateFollowings(username string, followingusername string)
 		}
 		return err2
 	}
-	if err2 := row2.Err(); err2!= nil {
+	if err2 := row2.Err(); err2 != nil {
 		return err2
 	}
 
@@ -31,12 +32,12 @@ func (db *appdbimpl) UpdateFollowings(username string, followingusername string)
 		followingId, userId)
 	if err != nil {
 		return err
-	} 
+	}
 
 	affected, err := res.RowsAffected()
 	if err != nil {
 		return err
-	} 
+	}
 	if affected == 0 {
 		return ErrFollowingAlreadyExist
 	}

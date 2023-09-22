@@ -1,9 +1,10 @@
 package database
+
 import "database/sql"
 
 func (db *appdbimpl) SelectFollowings(username string, page uint64, limit uint64) ([]Following, error) {
 	var ret []Following
-	var offset = (page -1)*limit
+	var offset = (page - 1) * limit
 	var userId uint64
 
 	row := db.c.QueryRow(`SELECT id FROM users WHERE username=?`, username)
@@ -13,7 +14,7 @@ func (db *appdbimpl) SelectFollowings(username string, page uint64, limit uint64
 		}
 		return nil, err
 	}
-	if err := row.Err(); err!= nil {
+	if err := row.Err(); err != nil {
 		return nil, err
 	}
 
@@ -36,11 +37,10 @@ func (db *appdbimpl) SelectFollowings(username string, page uint64, limit uint64
 		}
 		ret = append(ret, f)
 	}
-	
-	if err2:=rows2.Err(); err2 != nil {
+
+	if err2 := rows2.Err(); err2 != nil {
 		return nil, err2
 	}
 
 	return ret, nil
 }
-

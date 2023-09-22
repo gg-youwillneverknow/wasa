@@ -1,11 +1,12 @@
 package database
+
 import "database/sql"
 
 func (db *appdbimpl) SelectBans(username string, page uint64, limit uint64) ([]Ban, error) {
 	var userId uint64
-	var offset = (page -1)*limit
+	var offset = (page - 1) * limit
 	var ret []Ban
-	
+
 	row := db.c.QueryRow(`SELECT id FROM users WHERE username=?`, username)
 	if err := row.Scan(&userId); err != nil {
 		if err == sql.ErrNoRows {
@@ -13,12 +14,11 @@ func (db *appdbimpl) SelectBans(username string, page uint64, limit uint64) ([]B
 		}
 		return nil, err
 	}
-	if err := row.Err(); err!= nil {
+	if err := row.Err(); err != nil {
 		return nil, err
 	}
 
-	const query = 
-	`SELECT users.username FROM users INNER JOIN bans ON users.id=bans.banned_id 
+	const query = `SELECT users.username FROM users INNER JOIN bans ON users.id=bans.banned_id 
 	WHERE bans.user_id=?
 	LIMIT ? 
 	OFFSET ?`

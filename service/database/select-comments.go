@@ -1,7 +1,7 @@
 package database
 
 func (db *appdbimpl) SelectComments(photoId uint64, page uint64, limit uint64) ([]Comment, error) {
-	var offset = (page -1)*limit
+	var offset = (page - 1) * limit
 	var ret []Comment
 
 	const query = `

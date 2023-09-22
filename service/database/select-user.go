@@ -1,4 +1,5 @@
 package database
+
 import "database/sql"
 
 func (db *appdbimpl) SelectUser(username string) (uint64, error) {
@@ -12,10 +13,10 @@ func (db *appdbimpl) SelectUser(username string) (uint64, error) {
 		return ret, err
 	}
 
-	if err := row.Err(); err!= nil {
+	if err := row.Err(); err != nil {
 		return ret, err
 	}
 
 	return ret, nil
-	
+
 }

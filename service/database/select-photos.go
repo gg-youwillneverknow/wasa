@@ -1,7 +1,7 @@
 package database
 
 func (db *appdbimpl) SelectPhotos(username string, page uint64, limit uint64) ([]Photo, error) {
-	var offset = (page -1)*limit
+	var offset = (page - 1) * limit
 	var ret []Photo
 
 	const query = `
