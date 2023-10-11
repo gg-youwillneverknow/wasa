@@ -12,10 +12,10 @@
         uploadError: null,
         currentStatus: null,
         uploadFieldName: 'photos',
-		    path: "/users/"+this.username+"/photos/"
       }
     },
     computed: {
+      path(){ return "/users/"+this.username+"/photos/"},
       isInitial() {
         return this.currentStatus === STATUS_INITIAL;
       },

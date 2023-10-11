@@ -36,7 +36,6 @@ export default {
 	watch: {
 		async '$route.params.username'(newUsername) {
 			this.username=localStorage.getItem('username')
-
 			this.isbanned=false
 			if(newUsername){
 			this.searchUsername=newUsername		
@@ -308,7 +307,7 @@ export default {
 		<ErrorMsg id="errorProf" v-if="errormsg" :msg="errormsg"></ErrorMsg>
 		<button v-if="searchUsername!==username && !isbanned && errormsg===null" id="followbut" class="btn btn-primary" @click="handlebtn">{{isfollowing ? "unfollow" : "follow"}} </button>
 		<button v-if="searchUsername!==username && !isbanned && errormsg===null" id="banbut" class="btn btn-primary" @click="handlebtn2">{{searchbanned ? "remove ban" : "ban"}} </button>
-		<div class="alert alert-primary" role="alert" v-if="isbanned">
+		<div id="banallert" class="alert alert-primary" role="alert" v-if="isbanned">
 		You have been banned!
 		</div>
 	</div>
@@ -317,6 +316,10 @@ export default {
 	
 </template>
 <style>
+#banallert{
+left: 500px;
+top: 250px;
+}
 #errorProf{
 margin-left: 0px;
 left: 500px;

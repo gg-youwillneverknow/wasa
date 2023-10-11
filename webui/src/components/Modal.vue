@@ -32,7 +32,7 @@ export default {
 			this.errormsg = null;
 			try {
 				let response = await this.$axios.put(this.path,
-				JSON.stringify({Username: this.newUsername, ID: this.userId}),config);
+				JSON.stringify({username: this.newUsername, userId: Number(this.userId)}),config);
 				if (response.status!=200){
 					throw(response.status)
 				}else{

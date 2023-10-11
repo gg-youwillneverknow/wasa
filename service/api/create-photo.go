@@ -55,10 +55,10 @@ func (rt *_router) createPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	photo.FromDatabase(dbphoto)
-
+	w.WriteHeader(201)
 	// Send the output to the user.
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(photo)
 
-	w.WriteHeader(201)
+
 }

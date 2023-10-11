@@ -19,7 +19,6 @@ func (rt *_router) updateAccount(w http.ResponseWriter, r *http.Request, ps http
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
 	// Update the User in the database.
 	ret, err = rt.db.UpdateAccount(updatedInfo.ToDatabase())
 	if errors.Is(err, database.ErrUserDoesNotExist) {
