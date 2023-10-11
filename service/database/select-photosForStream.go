@@ -31,7 +31,7 @@ func (db *appdbimpl) SelectPhotosForStream(username string, page uint64, limit u
 		}
 		ret = append(ret, p)
 	}
-	if rows.Err() != nil {
+	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 

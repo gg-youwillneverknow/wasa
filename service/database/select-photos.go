@@ -25,7 +25,7 @@ func (db *appdbimpl) SelectPhotos(username string, page uint64, limit uint64) ([
 		p.Owner = username
 		ret = append(ret, p)
 	}
-	if rows.Err() != nil {
+	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 

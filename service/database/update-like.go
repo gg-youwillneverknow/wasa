@@ -5,6 +5,7 @@ func (db *appdbimpl) UpdateLike(photoId uint64, likerId uint64) error {
 	if err != nil {
 		return err
 	}
+
 	affected, err := res.RowsAffected()
 	if err != nil {
 		return err

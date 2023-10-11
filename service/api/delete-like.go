@@ -10,6 +10,7 @@ import (
 )
 
 func (rt *_router) deleteLike(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	var err error
 
 	photoId, err := strconv.ParseUint(ps.ByName("photoId"), 10, 64)
 	if err != nil {
@@ -23,12 +24,12 @@ func (rt *_router) deleteLike(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	err2 := rt.db.DeleteLike(photoId, likerId)
-	if errors.Is(err2, database.ErrLikeDoesNotExist) {
+	err = rt.db.DeleteLike(photoId, likerId)
+	if errors.Is(err, database.ErrLikeDoesNotExist) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	if err2 != nil {
+	if err != nil {
 		ctx.Logger.WithError(err).WithField("likerId", likerId).Error("can't delete the like")
 		w.WriteHeader(http.StatusInternalServerError)
 		return

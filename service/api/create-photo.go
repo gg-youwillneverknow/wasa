@@ -17,7 +17,7 @@ func (rt *_router) createPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	var err error
 	username := ps.ByName("username")
 
-	if err := r.ParseMultipartForm(32 << 20); err != nil {
+	if err = r.ParseMultipartForm(32 << 20); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

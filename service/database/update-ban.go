@@ -31,6 +31,9 @@ func (db *appdbimpl) UpdateBan(username string, bannedusername string) error {
 
 	res, err := db.c.Exec(`INSERT INTO bans (user_id, banned_id) VALUES (?, ?)`,
 		userId, bannedId)
+	if err != nil {
+		return err
+	}
 
 	affected, err := res.RowsAffected()
 	if err != nil {

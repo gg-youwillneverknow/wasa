@@ -13,7 +13,9 @@ var token uint64
 
 func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var username string
-	err := json.NewDecoder(r.Body).Decode(&username)
+	var err error
+
+	err = json.NewDecoder(r.Body).Decode(&username)
 
 	dbuserId, err := rt.db.SelectUser(username)
 

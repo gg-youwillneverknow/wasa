@@ -13,8 +13,9 @@ func (rt *_router) deleteBan(w http.ResponseWriter, r *http.Request, ps httprout
 	username = ps.ByName("username")
 	var bannedusername string
 	bannedusername = ps.ByName("bannedname")
+	var err error
 
-	err := rt.db.DeleteBan(username, bannedusername)
+	err = rt.db.DeleteBan(username, bannedusername)
 	if errors.Is(err, database.ErrBanDoesNotExist) {
 		ctx.Logger.WithError(err).Error("can't delete the ban")
 		w.WriteHeader(http.StatusBadRequest)

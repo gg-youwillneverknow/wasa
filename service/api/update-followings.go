@@ -14,8 +14,9 @@ func (rt *_router) updateFollowings(w http.ResponseWriter, r *http.Request, ps h
 
 	var followingusername string
 	followingusername = ps.ByName("followingname")
+	var err error
 
-	err := rt.db.UpdateFollowings(username, followingusername)
+	err = rt.db.UpdateFollowings(username, followingusername)
 
 	if errors.Is(err, database.ErrFollowingAlreadyExist) {
 		ctx.Logger.WithError(err).Error("can't update the following")

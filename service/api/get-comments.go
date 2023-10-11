@@ -13,6 +13,7 @@ func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httpro
 	var page uint64
 	var limit uint64
 	var comments []Comment
+	var err error
 
 	photoId, err := strconv.ParseUint(ps.ByName("photoId"), 10, 64)
 	if err != nil {
