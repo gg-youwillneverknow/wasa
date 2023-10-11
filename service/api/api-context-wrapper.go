@@ -28,25 +28,18 @@ func (rt *_router) wrap(fn httpRouterHandler) func(http.ResponseWriter, *http.Re
 				return
 			}
 
+			if authHeader == "Bearer" {
+				w.WriteHeader(http.StatusUnauthorized)
+				//ctx.Logger.WithError("Unauthorized: Missing Authorization header")
+				return
+			}
+
 			if !strings.HasPrefix(authHeader, "Bearer ") {
 				w.WriteHeader(http.StatusUnauthorized)
 				//ctx.Logger.WithError("Unauthorized: Invalid Authorization method")
 				return
 			}
 
-			userId, err := strconv.ParseUint(strings.TrimPrefix(authHeader, "Bearer "), 10, 64)
-
-			if err != nil {
-				w.WriteHeader(http.StatusUnauthorized)
-				//ctx.Logger.WithError("Unauthorized: Invalid Authorization token")
-				return
-			}
-
-			if userId != token {
-				w.WriteHeader(http.StatusUnauthorized)
-				//ctx.Logger.WithError("Unauthorized: User is not logged in")
-				return
-			}
 		}
 
 		reqUUID, err := uuid.NewV4()
