@@ -56,7 +56,15 @@ export default {
             if (this.followers!=null){
                 this.$emit("messageToParent",this.followers);
             }
-        }    
+        },
+        numfollowers(newPropValue, oldPropValue) {
+            
+            this.getFollowers(); // Call your method here
+        },  
+        numfollowings(newPropValue, oldPropValue) {
+            
+            this.getFollowings(); // Call your method here
+        }  
     },
     methods: {
         async getFollowings(){

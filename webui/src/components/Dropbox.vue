@@ -68,10 +68,7 @@
                       }
         return this.$axios.post(this.path, formData, config)
           // get data
-      },
-      close (){
-			  
-		  }
+      }
     },
     mounted() {
       this.reset();
@@ -82,13 +79,13 @@
 
 
 <template> 
-<button id="postbut" data-bs-toggle="modal"  data-bs-target="#post" class="btn btn-primary"> create post </button>
+<button id="postbut" data-bs-toggle="modal" @click="reset" data-bs-target="#post" class="btn btn-primary"> create post </button>
 <div class="modal fade" id="post" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Create post</h5>
-        <button type="button" @click="close" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
 		<div class="container">
