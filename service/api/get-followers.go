@@ -14,10 +14,9 @@ func (rt *_router) getFollowers(w http.ResponseWriter, r *http.Request, ps httpr
 
 	var page uint64
 	var limit uint64
-	var username string
 	var followers []Follower
-	username = ps.ByName("username")
 	var err error
+	username := ps.ByName("username")
 
 	if r.URL.Query().Has("page") {
 		page, err = strconv.ParseUint(r.URL.Query().Get("page"), 10, 64)
@@ -46,14 +45,14 @@ func (rt *_router) getFollowers(w http.ResponseWriter, r *http.Request, ps httpr
 		limit = 20
 	}
 
-	dbfollowers, err := rt.db.SelectFollowers(username, page, limit)
-	if errors.Is(err, database.ErrUserDoesNotExist) {
-		ctx.Logger.WithError(err).Error("can't get followers")
+	dbfollowers, err2 := rt.db.SelectFollowers(username, page, limit)
+	if errors.Is(err2, database.ErrUserDoesNotExist) {
+		ctx.Logger.WithError(err2).Error("can't get followers")
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	if err != nil {
-		ctx.Logger.WithError(err).Error("can't get followers")
+	if err2 != nil {
+		ctx.Logger.WithError(err2).Error("can't get followers")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

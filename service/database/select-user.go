@@ -13,8 +13,8 @@ func (db *appdbimpl) SelectUser(username string) (uint64, error) {
 		return ret, err
 	}
 
-	if err := row.Err(); err != nil {
-		return ret, err
+	if err2 := row.Err(); err2 != nil {
+		return ret, err2
 	}
 
 	return ret, nil

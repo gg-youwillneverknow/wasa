@@ -13,30 +13,30 @@ func (db *appdbimpl) DeleteFollowing(username string, followingusername string) 
 		}
 		return err
 	}
-	if err := row.Err(); err != nil {
-		return err
+	if err2 := row.Err(); err2 != nil {
+		return err2
 	}
 
 	row2 := db.c.QueryRow(`SELECT id FROM users WHERE username=?`, followingusername)
-	if err2 := row2.Scan(&followingId); err2 != nil {
-		if err2 == sql.ErrNoRows {
+	if err3 := row2.Scan(&followingId); err3 != nil {
+		if err3 == sql.ErrNoRows {
 			return ErrUserDoesNotExist
 		}
-		return err2
+		return err3
 	}
 
-	if err2 := row2.Err(); err2 != nil {
-		return err2
+	if err4 := row2.Err(); err4 != nil {
+		return err4
 	}
 
-	res, err := db.c.Exec(`DELETE FROM followers WHERE user_id=? AND follower_id=?`, followingId, userId)
-	if err != nil {
-		return err
+	res, err5 := db.c.Exec(`DELETE FROM followers WHERE user_id=? AND follower_id=?`, followingId, userId)
+	if err5 != nil {
+		return err5
 	}
 
-	affected, err := res.RowsAffected()
-	if err != nil {
-		return err
+	affected, err6 := res.RowsAffected()
+	if err6 != nil {
+		return err6
 	} else if affected == 0 {
 		return ErrFollowingDoesNotExist
 	}

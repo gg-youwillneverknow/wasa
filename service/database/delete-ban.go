@@ -3,9 +3,10 @@ package database
 import "database/sql"
 
 func (db *appdbimpl) DeleteBan(username string, bannedusername string) error {
-
-	row := db.c.QueryRow(`SELECT id FROM users WHERE username=?`, username)
 	var userId uint64
+	var bannedId uint64
+	row := db.c.QueryRow(`SELECT id FROM users WHERE username=?`, username)
+
 	if err := row.Scan(&userId); err != nil {
 		if err == sql.ErrNoRows {
 			return ErrUserDoesNotExist
@@ -13,27 +14,30 @@ func (db *appdbimpl) DeleteBan(username string, bannedusername string) error {
 		return err
 	}
 
-	if err := row.Err(); err != nil {
-		return err
+	if err2 := row.Err(); err2 != nil {
+		return err2
 	}
 
 	row2 := db.c.QueryRow(`SELECT id FROM users WHERE username=?`, bannedusername)
-	var bannedId uint64
-	if err2 := row2.Scan(&bannedId); err2 != nil {
-		if err2 == sql.ErrNoRows {
+
+	if err3 := row2.Scan(&bannedId); err3 != nil {
+		if err3 == sql.ErrNoRows {
 			return ErrUserDoesNotExist
 		}
-		return err2
+		return err3
 	}
 
-	if err2 := row2.Err(); err2 != nil {
-		return err2
+	if err4 := row2.Err(); err4 != nil {
+		return err4
 	}
-	res, err := db.c.Exec(`DELETE FROM bans WHERE user_id=? AND banned_id=?`, userId, bannedId)
+	res, err5 := db.c.Exec(`DELETE FROM bans WHERE user_id=? AND banned_id=?`, userId, bannedId)
+	if err5 != nil {
+		return err5
+	}
 
-	affected, err := res.RowsAffected()
-	if err != nil {
-		return err
+	affected, err6 := res.RowsAffected()
+	if err6 != nil {
+		return err6
 	} else if affected == 0 {
 
 		return ErrBanDoesNotExist

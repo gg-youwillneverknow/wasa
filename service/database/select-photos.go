@@ -12,7 +12,7 @@ func (db *appdbimpl) SelectPhotos(username string, page uint64, limit uint64) ([
 
 	rows, err := db.c.Query(query, username, limit, offset)
 	if err != nil {
-		return nil, err
+		return ret, err
 	}
 	defer func() { _ = rows.Close() }()
 
@@ -20,13 +20,13 @@ func (db *appdbimpl) SelectPhotos(username string, page uint64, limit uint64) ([
 		var p Photo
 		err = rows.Scan(&p.ID, &p.Datetime, &p.NumComments, &p.NumLikes)
 		if err != nil {
-			return nil, err
+			return ret, err
 		}
 		p.Owner = username
 		ret = append(ret, p)
 	}
-	if err := rows.Err(); err != nil {
-		return nil, err
+	if err2 := rows.Err(); err2 != nil {
+		return ret, err2
 	}
 
 	return ret, nil

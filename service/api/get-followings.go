@@ -45,14 +45,14 @@ func (rt *_router) getFollowings(w http.ResponseWriter, r *http.Request, ps http
 		limit = 20
 	}
 
-	followings, err := rt.db.SelectFollowings(username, page, limit)
-	if errors.Is(err, database.ErrUserDoesNotExist) {
-		ctx.Logger.WithError(err).Error("can't get followings")
+	followings, err2 := rt.db.SelectFollowings(username, page, limit)
+	if errors.Is(err2, database.ErrUserDoesNotExist) {
+		ctx.Logger.WithError(err2).Error("can't get followings")
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	if err != nil {
-		ctx.Logger.WithError(err).Error("can't get followings")
+	if err2 != nil {
+		ctx.Logger.WithError(err2).Error("can't get followings")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

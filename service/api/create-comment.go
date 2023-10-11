@@ -11,7 +11,6 @@ import (
 func (rt *_router) createComment(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var comment Comment
-	var err error
 
 	photoId, err := strconv.ParseUint(ps.ByName("photoId"), 10, 64)
 	if err != nil {
@@ -29,9 +28,9 @@ func (rt *_router) createComment(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	dbcomment, err := rt.db.CreateComment(photoId, comment.ToDatabase())
-	if err != nil {
-		ctx.Logger.WithError(err).Error("can't create the comment")
+	dbcomment, err2 := rt.db.CreateComment(photoId, comment.ToDatabase())
+	if err2 != nil {
+		ctx.Logger.WithError(err2).Error("can't create the comment")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

@@ -10,7 +10,7 @@ func (db *appdbimpl) SelectComments(photoId uint64, page uint64, limit uint64) (
 	OFFSET ?`
 	rows, err := db.c.Query(query, photoId, limit, offset)
 	if err != nil {
-		return nil, err
+		return ret, err
 	}
 	defer func() { _ = rows.Close() }()
 
@@ -18,12 +18,12 @@ func (db *appdbimpl) SelectComments(photoId uint64, page uint64, limit uint64) (
 		var c Comment
 		err = rows.Scan(&c.ID, &c.Text, &c.Commenter)
 		if err != nil {
-			return nil, err
+			return ret, err
 		}
 		ret = append(ret, c)
 	}
-	if rows.Err() != nil {
-		return nil, err
+	if err2 := rows.Err(); err2 != nil {
+		return ret, err2
 	}
 
 	return ret, nil

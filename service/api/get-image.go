@@ -10,7 +10,6 @@ import (
 func (rt *_router) getImage(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var image []byte
-	var err error
 
 	photoId, err := strconv.ParseUint(ps.ByName("photoId"), 10, 64)
 	if err != nil {

@@ -9,14 +9,11 @@ import (
 )
 
 func (rt *_router) deleteFollowing(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var username string
-	username = ps.ByName("username")
+	username := ps.ByName("username")
 
-	var followingusername string
-	followingusername = ps.ByName("followingname")
-	var err error
+	followingusername := ps.ByName("followingname")
 
-	err = rt.db.DeleteFollowing(username, followingusername)
+	err := rt.db.DeleteFollowing(username, followingusername)
 	if errors.Is(err, database.ErrFollowingDoesNotExist) {
 		ctx.Logger.WithError(err).Error("can't delete the following")
 		w.WriteHeader(http.StatusBadRequest)

@@ -10,12 +10,12 @@ func (db *appdbimpl) SelectFollowers(username string, page uint64, limit uint64)
 	row := db.c.QueryRow(`SELECT id FROM users WHERE username=?`, username)
 	if err := row.Scan(&userId); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, ErrUserDoesNotExist
+			return ret, ErrUserDoesNotExist
 		}
-		return nil, err
+		return ret, err
 	}
-	if err := row.Err(); err != nil {
-		return nil, err
+	if err2 := row.Err(); err2 != nil {
+		return ret, err2
 	}
 
 	const query = `
@@ -23,22 +23,22 @@ func (db *appdbimpl) SelectFollowers(username string, page uint64, limit uint64)
 	WHERE followers.user_id=?
 	LIMIT ?
 	OFFSET ?`
-	rows2, err2 := db.c.Query(query, userId, limit, offset)
-	if err2 != nil {
-		return nil, err2
+	rows, err3 := db.c.Query(query, userId, limit, offset)
+	if err3 != nil {
+		return ret, err3
 	}
-	defer func() { _ = rows2.Close() }()
+	defer func() { _ = rows.Close() }()
 
-	for rows2.Next() {
+	for rows.Next() {
 		var f Follower
-		err2 = rows2.Scan(&f.Username)
-		if err2 != nil {
-			return nil, err2
+		err3 = rows.Scan(&f.Username)
+		if err3 != nil {
+			return ret, err3
 		}
 		ret = append(ret, f)
 	}
-	if err2 := rows2.Err(); err2 != nil {
-		return nil, err2
+	if err4 := rows.Err(); err4 != nil {
+		return ret, err4
 	}
 	return ret, nil
 }

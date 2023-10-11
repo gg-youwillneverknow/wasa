@@ -23,8 +23,8 @@ func (db *appdbimpl) SelectLikes(photoId uint64, page uint64, limit uint64) ([]L
 		}
 		ret = append(ret, l)
 	}
-	if rows.Err() != nil {
-		return ret, err
+	if err2 := rows.Err(); err2 != nil {
+		return ret, err2
 	}
 
 	return ret, nil

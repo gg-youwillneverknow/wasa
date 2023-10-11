@@ -12,10 +12,9 @@ func (rt *_router) getStream(w http.ResponseWriter, r *http.Request, ps httprout
 
 	var err error
 	var photos []Photo
-	var username string
 	var page uint64
 	var limit uint64
-	username = ps.ByName("username")
+	username := ps.ByName("username")
 	if r.URL.Query().Has("page") {
 		page, err = strconv.ParseUint(r.URL.Query().Get("page"), 10, 64)
 		if err != nil {
@@ -43,9 +42,9 @@ func (rt *_router) getStream(w http.ResponseWriter, r *http.Request, ps httprout
 		limit = 20
 	}
 
-	dbphotos, err := rt.db.SelectPhotosForStream(username, page, limit)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("can't get photos")
+	dbphotos, err2 := rt.db.SelectPhotosForStream(username, page, limit)
+	if err2 != nil {
+		ctx.Logger.WithError(err2).Error("can't get photos")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

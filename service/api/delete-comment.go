@@ -10,8 +10,6 @@ import (
 )
 
 func (rt *_router) deleteComment(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var err error
-
 	commentId, err := strconv.ParseUint(ps.ByName("commentId"), 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

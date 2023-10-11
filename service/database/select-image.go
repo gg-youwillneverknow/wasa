@@ -14,8 +14,8 @@ func (db *appdbimpl) SelectImage(photoId uint64) ([]byte, error) {
 		return ret, err
 	}
 
-	if err := row.Err(); err != nil {
-		return ret, err
+	if err2 := row.Err(); err2 != nil {
+		return ret, err2
 	}
 
 	return ret, nil

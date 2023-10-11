@@ -6,9 +6,9 @@ func (db *appdbimpl) DeleteLike(photoId uint64, likerId uint64) error {
 		return err
 	}
 
-	affected, err := res.RowsAffected()
-	if err != nil {
-		return err
+	affected, err2 := res.RowsAffected()
+	if err2 != nil {
+		return err2
 	} else if affected == 0 {
 		return ErrLikeDoesNotExist
 	}

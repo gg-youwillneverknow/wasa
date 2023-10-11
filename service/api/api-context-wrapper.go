@@ -23,19 +23,19 @@ func (rt *_router) wrap(fn httpRouterHandler) func(http.ResponseWriter, *http.Re
 
 			if authHeader == "" {
 				w.WriteHeader(http.StatusUnauthorized)
-				//ctx.Logger.WithError("Unauthorized: Missing Authorization header")
+				// ctx.Logger.WithError("Unauthorized: Missing Authorization header")
 				return
 			}
 
 			if authHeader == "Bearer" {
 				w.WriteHeader(http.StatusUnauthorized)
-				//ctx.Logger.WithError("Unauthorized: Missing Authorization header")
+				// ctx.Logger.WithError("Unauthorized: Missing Authorization header")
 				return
 			}
 
 			if !strings.HasPrefix(authHeader, "Bearer ") {
 				w.WriteHeader(http.StatusUnauthorized)
-				//ctx.Logger.WithError("Unauthorized: Invalid Authorization method")
+				// ctx.Logger.WithError("Unauthorized: Invalid Authorization method")
 				return
 			}
 

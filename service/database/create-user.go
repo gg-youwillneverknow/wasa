@@ -6,9 +6,9 @@ func (db *appdbimpl) CreateUser(username string) (uint64, error) {
 		return 0, err
 	}
 
-	lastInsertID, err := res.LastInsertId()
-	if err != nil {
-		return 0, err
+	lastInsertID, err2 := res.LastInsertId()
+	if err2 != nil {
+		return 0, err2
 	}
 
 	userId := uint64(lastInsertID)

@@ -13,20 +13,20 @@ func (db *appdbimpl) CreateComment(photoId uint64, comment Comment) (Comment, er
 		return comment, err
 	}
 
-	if err := row.Err(); err != nil {
-		return comment, err
+	if err2 := row.Err(); err2 != nil {
+		return comment, err2
 	}
 
-	res, err := db.c.Exec(`INSERT INTO comments (id, photo_id, comment, commenter_id) VALUES (NULL, ?, ?, ?)`,
+	res, err3 := db.c.Exec(`INSERT INTO comments (id, photo_id, comment, commenter_id) VALUES (NULL, ?, ?, ?)`,
 		photoId, comment.Text, id)
-	if err != nil {
-		return comment, err
+	if err3 != nil {
+		return comment, err3
 	}
 
-	lastInsertID, err := res.LastInsertId()
+	lastInsertID, err4 := res.LastInsertId()
 
-	if err != nil {
-		return comment, err
+	if err4 != nil {
+		return comment, err4
 	}
 
 	comment.ID = uint64(lastInsertID)

@@ -6,9 +6,9 @@ func (db *appdbimpl) DeletePhoto(photoId uint64) error {
 		return err
 	}
 
-	affected, err := res.RowsAffected()
-	if err != nil {
-		return err
+	affected, err2 := res.RowsAffected()
+	if err2 != nil {
+		return err2
 	} else if affected == 0 {
 		// If we didn't delete any row, then the phot0 didn't exist
 		return ErrPhotoDoesNotExist

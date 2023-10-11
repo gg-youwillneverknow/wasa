@@ -12,7 +12,6 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 	var page uint64
 	var limit uint64
 	var likes []Like
-	var err error
 
 	photoId, err := strconv.ParseUint(ps.ByName("photoId"), 10, 64)
 	if err != nil {
@@ -47,9 +46,9 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 		limit = 20
 	}
 
-	dblikes, err := rt.db.SelectLikes(photoId, page, limit)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("can't get likes")
+	dblikes, err2 := rt.db.SelectLikes(photoId, page, limit)
+	if err2 != nil {
+		ctx.Logger.WithError(err2).Error("can't get likes")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

@@ -7,10 +7,10 @@ func (db *appdbimpl) UpdateAccount(updatedInfo User) (User, error) {
 		return updatedInfo, err
 	}
 
-	affected, err := res.RowsAffected()
+	affected, err2 := res.RowsAffected()
 
-	if err != nil {
-		return updatedInfo, err
+	if err2 != nil {
+		return updatedInfo, err2
 	} else if affected == 0 {
 		// If we didn't update any row, then the user didn't exist
 		return updatedInfo, ErrUserDoesNotExist

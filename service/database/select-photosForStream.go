@@ -18,7 +18,7 @@ func (db *appdbimpl) SelectPhotosForStream(username string, page uint64, limit u
 	// Issue the query, using the bounding box as filter
 	rows, err := db.c.Query(query, username, username, limit, offset)
 	if err != nil {
-		return nil, err
+		return ret, err
 	}
 	defer func() { _ = rows.Close() }()
 
@@ -27,12 +27,12 @@ func (db *appdbimpl) SelectPhotosForStream(username string, page uint64, limit u
 		var p Photo
 		err = rows.Scan(&p.ID, &p.Datetime, &p.NumComments, &p.NumLikes, &p.Owner)
 		if err != nil {
-			return nil, err
+			return ret, err
 		}
 		ret = append(ret, p)
 	}
-	if err := rows.Err(); err != nil {
-		return nil, err
+	if err2 := rows.Err(); err2 != nil {
+		return ret, err2
 	}
 
 	return ret, nil

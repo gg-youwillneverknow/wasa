@@ -13,7 +13,6 @@ func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httpro
 	var page uint64
 	var limit uint64
 	var comments []Comment
-	var err error
 
 	photoId, err := strconv.ParseUint(ps.ByName("photoId"), 10, 64)
 	if err != nil {
@@ -48,9 +47,9 @@ func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httpro
 		limit = 20
 	}
 
-	dbcomments, err := rt.db.SelectComments(photoId, page, limit)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("can't get comments")
+	dbcomments, err2 := rt.db.SelectComments(photoId, page, limit)
+	if err2 != nil {
+		ctx.Logger.WithError(err2).Error("can't get comments")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

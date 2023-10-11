@@ -4,6 +4,25 @@ info:
   version: 0.0.1
 servers: 
   - url: http://localhost:3000
+tags: 
+  - name: users
+    description: Everything regarding the specific users
+  - name: photos 
+    description: Everything regarding the specific photos
+  - name: profile
+    description: Everything regarding the specific profile
+  - name: stream
+    description: Everything regarding the specific stream
+  - name: likes
+    description: Everything regarding the specific likes
+  - name: comments
+    description: Everything regarding the specific comments
+  - name: followings
+    description: Everything regarding the specific followings
+  - name: followers
+    description: Everything regarding the specific followers
+  - name: bans
+    description: Everything regarding the specific bans
 paths: 
   /accounts/{username}/edit:
     parameters:
@@ -12,7 +31,8 @@ paths:
       operationId: setMyUserName
       summary: Updates user account by providing a new username.
       description: Allows the user specified by userId to update its user account. The content returned if successful is a username.
-      tags: [user settings]
+      tags: 
+      - users
       requestBody: 
         content: 
           application/json:       
@@ -35,7 +55,8 @@ paths:
       operationId: getUserProfile
       summary: Gets profile of user. 
       description: Allows a user to get the profile of the user specified by username.
-      tags: [profile]
+      tags: 
+        - profile
       responses:
         '200':
           description: Successful operation.
@@ -54,7 +75,8 @@ paths:
       operationId: getPhotos
       summary: Get the photos uploaded by the user. 
       description: Allows the user to get photos of the user specified by username.
-      tags: [photos]
+      tags: 
+        - photos
       responses:
         '200':
           description: Successful operation.
@@ -67,7 +89,8 @@ paths:
       operationId: uploadPhoto
       summary: Post a photo of the user and so add it to their stream of photos.
       description: Allows a user specified by username to add a photo to their photos collection. 
-      tags: [photos]
+      tags: 
+        - photos
       requestBody: 
         content:
           multipart/form-data:
@@ -90,7 +113,8 @@ paths:
       operationId: getRawImage
       summary: Get the raw image.
       description: Allows a user to get the image contained in a photo resource.
-      tags: [photos]
+      tags: 
+        - photos
       responses: 
         '200':
           description: Successful operation.
@@ -109,7 +133,8 @@ paths:
       operationId: getMyStream
       summary: Get the photos of the followed users.
       description: Allows a user specified by username to get their stream which is a collection of photos of different users. 
-      tags: [stream]
+      tags: 
+        - stream
       responses:
         '200':
           description: Successful operation.
@@ -127,7 +152,8 @@ paths:
       operationId: deletePhoto
       summary: Delete a photo of the user and so remove it from their stream of photos.
       description: Allows the user to delete the photo specified by photoID of the user specified by username.
-      tags: [photos]
+      tags: 
+        - photos
       responses:
         '204':  {description: Photo deleted successfully. }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -137,7 +163,8 @@ paths:
       operationId: getPhoto
       summary: Get the photo with the specified ID. 
       description: Allows the user to get photo of the user specified by username.
-      tags: [photos]
+      tags: 
+        - photos
       responses:
         '200':
           description: Successful operation.
@@ -158,10 +185,11 @@ paths:
       operationId: getCommentPhoto
       summary: Get comments of a photo of a user specified by username.
       description: A user can get the comments of a photo specified by photoId from the photos of the user specified by username. 
-      tags: [comments]
+      tags: 
+        - comments
       responses: 
         "200":
-          description: Successfull operation.
+          description: Successful operation.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Comments" }
@@ -171,7 +199,8 @@ paths:
       operationId: commentPhoto
       summary: Post a comment on a photo of a user specified by username.
       description: A user can post a comment on a photo specified by photoId. 
-      tags: [comments]
+      tags: 
+        - comments
       requestBody: 
         content:
           application/json:
@@ -195,7 +224,8 @@ paths:
       operationId: uncommentPhoto
       summary: Remove a comment.
       description: The user can delete a comment specified by commentId.
-      tags: [comments]
+      tags: 
+        - comments
       responses:
         "204": { description: Comment deleted successfully. }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -212,7 +242,8 @@ paths:
       operationId: getLikes
       summary: Get likes of a photo.
       description: A user can get the likes on a photo specified by photoId of a user username.
-      tags: [likes]
+      tags: 
+        - likes
       responses: 
         "200":
           description: Successful operation.
@@ -231,7 +262,8 @@ paths:
       operationId: likePhoto
       summary: Put a like on a photo.
       description: The user specified by userId can put a like on a photo specified by photoId.
-      tags: [likes]
+      tags: 
+        - likes
       responses: 
         "200": 
           description: Like put successfully. 
@@ -245,7 +277,8 @@ paths:
       operationId: unlikePhoto
       summary: Remove a like.
       description: The user specified by userId can remove a like on a photo specified by photoId.
-      tags: [likes]
+      tags: 
+        - likes
       responses:
         "204": { description: Like removed successfully. }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -261,7 +294,8 @@ paths:
       operationId: getFollowers
       summary: Get followers of a user specified by username.
       description: A user can get the followers of the user specified by username. 
-      tags: [followers]
+      tags: 
+        - followers
       responses: 
         "200":
           description: Successful operation.
@@ -281,7 +315,8 @@ paths:
       operationId: getFollowings
       summary: Get followings of a user specified by username.
       description: A user can get the users they are followed by the user specified by username. 
-      tags: [followings]
+      tags: 
+        - followings
       responses: 
         "200":
           description: Successful operation.
@@ -300,7 +335,8 @@ paths:
       operationId: followUser
       summary: Folllow a user.
       description: The user specified by username can follow a user specified by following name.
-      tags: [followings]
+      tags: 
+        - followings
       responses: 
         "200":
           description: User followed successfully.
@@ -314,7 +350,8 @@ paths:
       operationId: unfollowUser
       summary: Unfollow a user.
       description: The user specified by username can unfollow a user specified by following name.
-      tags: [followings]
+      tags: 
+        - followings
       responses:
         "204": {description: User unfollowed successfully.}
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -330,7 +367,8 @@ paths:
       operationId: getBans
       summary: Get all users banned by the user username.
       description: The user specified by username can get all the bans they have put. 
-      tags: [bans]
+      tags: 
+        - bans
       responses: 
         "200":
           description: Successful operation.
@@ -349,7 +387,8 @@ paths:
       operationId: banUser
       summary: Ban a user specified by banId.
       description: The user specified by username can put a ban on the user specified by bannedname.
-      tags: [bans]
+      tags: 
+        - bans
       responses: 
         "200":
           description: User banned successfully.
@@ -363,7 +402,8 @@ paths:
       operationId: unbanUser
       summary: Unban a user specified by banId.
       description: The user specified by username can delete a ban on the user specified by bannedname.
-      tags: [bans]
+      tags: 
+        - bans
       responses:
           "204": { description: Ban removed successfully. }
           "400": { $ref: "#/components/responses/BadRequest" }
@@ -371,7 +411,7 @@ paths:
           "500": { $ref: "#/components/responses/InternalServerError" }
   /session:
     post:
-      tags: [login]
+      tags: ["login"]
       summary: Logs in the user 
       description: |-
             If the user does not exist, it will be created,

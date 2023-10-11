@@ -10,15 +10,13 @@ import (
 )
 
 func (rt *_router) updateLike(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var err error
-
 	photoId, err := strconv.ParseUint(ps.ByName("photoId"), 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	likerId, err := strconv.ParseUint(ps.ByName("userId"), 10, 64)
-	if err != nil {
+	likerId, err2 := strconv.ParseUint(ps.ByName("userId"), 10, 64)
+	if err2 != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

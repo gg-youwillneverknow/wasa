@@ -16,8 +16,8 @@ func (db *appdbimpl) SelectProfile(username string) (uint32, uint32, uint32, err
 		return 0, 0, 0, err
 	}
 
-	if err := rows.Err(); err != nil {
-		return 0, 0, 0, err
+	if err2 := rows.Err(); err2 != nil {
+		return 0, 0, 0, err2
 	}
 
 	return followers, followings, posts, nil

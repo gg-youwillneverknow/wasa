@@ -6,19 +6,19 @@ func (db *appdbimpl) CreatePhoto(photo Photo) (Photo, error) {
 	if err != nil {
 		return photo, err
 	}
-	lastInsertID, err := res.LastInsertId()
-	if err != nil {
-		return photo, err
+	lastInsertID, err2 := res.LastInsertId()
+	if err2 != nil {
+		return photo, err2
 	}
 	photo.ID = uint64(lastInsertID)
 
 	row := db.c.QueryRow(`SELECT datetime FROM photos WHERE id=?`, photo.ID)
-	if err = row.Scan(&photo.Datetime); err != nil {
-		return photo, err
+	if err3 := row.Scan(&photo.Datetime); err3 != nil {
+		return photo, err3
 	}
 
-	if row.Err() != nil {
-		return photo, err
+	if err4 := row.Err(); err4 != nil {
+		return photo, err4
 	}
 	return photo, nil
 }
