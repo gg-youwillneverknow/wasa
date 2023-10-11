@@ -1,0 +1,21 @@
+FROM node:lts as builder
+
+### Copy Vue.js code
+WORKDIR /src/
+COPY webui webui
+
+# Install project dependencies
+RUN npm install --save @fortawesome/fontawesome-svg-core
+RUN npm install --save @fortawesome/free-solid-svg-icons
+RUN npm install --save @fortawesome/free-regular-svg-icons
+RUN npm install --save @fortawesome/vue-fontawesome
+
+### Build Vue.js into plain HTML/CSS/JS
+WORKDIR /src/webui
+RUN npm run build-prod
+
+### Create final container
+FROM nginx:stable
+
+### Copy the (built) app from the builder image
+COPY --from=builder /src/webui/dist /usr/share/nginx/html
