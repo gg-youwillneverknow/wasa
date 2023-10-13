@@ -113,7 +113,7 @@ import Comments from '../components/Comments.vue'
         },
         async getImage(photoId) {
             try {
-                let response = await this.$axios.get(`images/${photoId}`, {
+                let response = await this.$axios.get(`/images/${photoId}`, {
                 responseType: "blob",
                 headers: { Accept: "image/jpeg", Authorization: `Bearer ${this.userId}`}
                 });

@@ -98,7 +98,7 @@ export default {
 			this.loading = true;
 			this.errormsg = null;
 			try {
-				let response = await this.$axios.get(`users/${this.searchUsername}/photos/`,{
+				let response = await this.$axios.get(`/users/${this.searchUsername}/photos/`,{
         			headers: {Authorization: `Bearer ${this.userId}`}
       			});
 				if (response.status !== 200) {

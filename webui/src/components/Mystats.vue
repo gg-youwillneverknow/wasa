@@ -21,7 +21,7 @@
                     <button @click="show2=!show2" class="dropbtn" :class="{'custom-style': show2}">Following</button>
                     <div v-show="show2" id="myDropdown" class="dropdown-content">
                         <div v-for="following in followings" :key="following.Username">
-                            <router-link :to="`/users/${following.Username}/profile/`">
+                            <router-link :to="`/users/${following.Username}/profile`">
                                 {{following.Username}}
                             </router-link>  
                         </div>
