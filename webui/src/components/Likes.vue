@@ -1,7 +1,7 @@
 <script>
 export default {
 	name: "Likes",
-	props: ["userId"],
+	props: ["userId","liked"],
 	data (){
 		return{
 			errormsg: null,
@@ -27,12 +27,17 @@ export default {
 		}
 	},
 	async created () {
-		console.log("mounted")
 		await this.getLikes()
 		if (this.likes!=null){
             this.$emit("messageToParent",this.likes);
         }
-	}
+	},
+	watch: {
+        async liked (newValue) {
+            await this.getLikes()
+            
+        },
+    },
 }
 
 </script>
@@ -57,5 +62,26 @@ export default {
 </div>
 </template>
 
-<style>
+<style scoped>
+
+.list-group-item {
+  background-color: rgb(200, 131, 211);
+  border-radius: 8px;
+  z-index: 1;
+}
+
+
+.list-group-item a {
+  color: purple;
+  padding: 12px 16px;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+
+.list-group-item a:hover {
+    background-color: yellow;
+    color: purple;
+    border-radius: 8px;
+}
 </style>

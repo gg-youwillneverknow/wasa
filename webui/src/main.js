@@ -15,9 +15,11 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 library.add(fas);
 library.add(far);
 
-localStorage.clear();
-
 const app = createApp(App)
+window.addEventListener('beforeunload', () => {
+    localStorage.clear();
+  });
+  
 app.config.globalProperties.$axios = axios;
 app.component("font-awesome-icon", FontAwesomeIcon);
 app.component("ErrorMsg", ErrorMsg);

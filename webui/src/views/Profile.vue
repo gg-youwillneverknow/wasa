@@ -279,20 +279,27 @@ export default {
 			this.loading = false;
 		},
 	},
-
+	
 	async created (){
-		this.searchUsername=this.$route.params.username
+		this.userId = localStorage.getItem('userId')
+		if (!this.userId){
+			this.$router.push({name: 'Login'})
+		}
+		else{
+			this.searchUsername=this.$route.params.username
 		
-		if (this.searchUsername!==this.username){
-			await this.checkBanned()
-			if (this.isbanned===true){
-				return
-			}
-			await this.getBans()
-		}		
+			if (this.searchUsername!==this.username){
+				await this.checkBanned()
+				if (this.isbanned===true){
+					return
+				}
+				await this.getBans()
+			}		
+			
+			await this.getProfile()
+			await this.getPhotos();
+		}
 		
-		await this.getProfile()
-		await this.getPhotos();
 	}
 
 }

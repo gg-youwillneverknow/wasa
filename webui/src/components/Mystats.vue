@@ -110,10 +110,16 @@ export default {
         }
     },
     async created () {
-        await this.getFollowings()
-        await this.getFollowers();
-        if (this.followers!=null){
-            this.$emit("messageToParent",this.followers);
+        let user=localStorage.getItem('userId')
+		if (!user){
+			this.$router.push({name: 'Login'})
+		}
+        else{
+            await this.getFollowings()
+            await this.getFollowers();
+            if (this.followers!=null){
+                this.$emit("messageToParent",this.followers);
+            }
         }
     }
 }

@@ -20,6 +20,12 @@ import Comments from '../components/Comments.vue'
         }
     },
     methods: {
+        navigateToAnotherView(event) {
+          if (event.target === event.currentTarget){
+            
+            this.$router.go(-1)
+          }
+        },
         async deletePhoto(){
           this.errormsg = null;
           try {
@@ -154,17 +160,22 @@ import Comments from '../components/Comments.vue'
     },
 
     async mounted() {
-        await this.getPhoto();
-        await this.resolveImageUrl();
-        this.username = localStorage.getItem('username')
-     
+        this.userId = localStorage.getItem('userId')
+        if (!this.userId){
+          this.$router.push({name: 'Login'})
+        }
+        else{
+          await this.getPhoto();
+          await this.resolveImageUrl();
+          this.username = localStorage.getItem('username')
+        }
     },
 };
 </script>
 
 <template>
     
-  <div class="lightbox">
+  <div class="lightbox" @click="navigateToAnotherView"> 
 
     <img :src="imageUrl">
 
@@ -221,7 +232,7 @@ import Comments from '../components/Comments.vue'
       </div>
     </div>
   </div>
-  <Likes @messageToParent="handleMessageFromLikes" :userId="userId"></Likes>
+  <Likes @messageToParent="handleMessageFromLikes" :userId="userId" :liked="liked"></Likes>
   <Comments @changesComments="handleMessageFromComments" :username = "username" :userId="userId"></Comments>
 </template>
 
@@ -263,6 +274,7 @@ import Comments from '../components/Comments.vue'
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 2rem;
+  z-index: 1;
 }
 
 .lightbox img {

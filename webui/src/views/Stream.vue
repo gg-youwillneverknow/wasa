@@ -2,6 +2,7 @@
 import Navbar from '../components/Navbar.vue'
 import Grid from '../components/Grid.vue';
 export default {
+
 	async mounted() {
 		this.userId = localStorage.getItem('userId')
 		if (!this.userId){
